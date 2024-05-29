@@ -12,17 +12,13 @@
       # "x86_64-darwin"
       "x86_64-linux"
     ];
-    pkgsFor = system: ((import nixpkgs {inherit system;}).extend self.outputs.overlays.base);
+    pkgsFor = system: (import nixpkgs {inherit system;});
   in {
     overlays = {
       default = self.outputs.overlays.slippi;
 
       slippi = final: prev: {
         slippi = self.outputs.packages.${final.system}.slippi;
-      };
-
-      base = final: prev: {
-        callAppImage = final.callPackage lib/appimage.nix {};
       };
     };
 

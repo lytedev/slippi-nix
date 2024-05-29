@@ -13,6 +13,28 @@ in {
   options.slippi.launcher = {
     enable = mkEnableOption "Install Slippi Launcher" // {default = true;};
 
+    netplayVersion = mkOption {
+      default = "3.4.0";
+      type = types.str;
+      description = "The version of Slippi Netplay to install.";
+    };
+    netplayHash = mkOption {
+      default = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
+      type = types.str;
+      description = "The hash of the Slippi Netplay zip to install.";
+    };
+
+    playbackVersion = mkOption {
+      default = "3.4.1";
+      type = types.str;
+      description = "The version of Slippi Playback to install.";
+    };
+    playbackHash = mkOption {
+      default = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
+      type = types.str;
+      description = "The hash of the Slippi Playback zip to install.";
+    };
+
     isoPath = mkOption {
       default = "";
       type = types.str;
@@ -61,41 +83,64 @@ in {
   };
   config = {
     home.packages = [(mkIf cfg.enable slippi-packages.launcher)];
-    home.file.".config/Slippi Launcher/netplay" = {
-      enable = true;
-      source = "${slippi-packages.netplay}/bin/";
+    home.file.".config/Slippi Launcher/netplay/Slippi_Online-x86_64.AppImage" = {
+      enable = cfg.enable;
+      source = "${slippi-packages.netplay}/bin/Slippi_Online-x86_64.AppImage";
       recursive = false;
     };
-    home.file.".config/Slippi Launcher/playback" = {
-      enable = true;
-      source = "${slippi-packages.playback}/bin/";
+    home.file.".config/Slippi Launcher/netplay/Sys" = {
+      enable = cfg.enable;
+      source = "${pkgs.fetchzip {
+        url = "https://github.com/project-slippi/Ishiiruka/releases/download/v${cfg.netplayVersion}/FM-Slippi-${cfg.netplayVersion}-Linux.zip";
+        hash = cfg.netplayHash;
+        stripRoot = false;
+      }}/Sys";
+      recursive = false;
+    };
+    home.file.".config/Slippi Launcher/playback/Slippi_Playback-x86_64.AppImage" = {
+      enable = cfg.enable;
+      source = "${slippi-packages.playback}/bin/Slippi_Playback-x86_64.AppImage";
+      recursive = false;
+    };
+    home.file.".config/Slippi Launcher/playback/Sys" = {
+      enable = cfg.enable;
+      source = "${
+        pkgs.fetchzip {
+          url = "https://github.com/project-slippi/Ishiiruka-Playback/releases/download/v${cfg.playbackVersion}/playback-${cfg.playbackVersion}-Linux.zip";
+          hash = cfg.netplayHash;
+          stripRoot = false;
+        }
+      }/Sys";
       recursive = false;
     };
     home.file.".config/Slippi Launcher/poopoobutt" = {
-      enable = true;
+      enable = cfg.enable;
       text = "wth is happening";
     };
-    xdg.configFile."Slippi Launcher/Settings".source = let
-      jsonFormat = pkgs.formats.json {};
-    in
-      jsonFormat.generate "slippi-config" {
-        settings = {
-          isoPath = cfg.isoPath;
+    xdg.configFile."Slippi Launcher/Settings" = {
+      enable = cfg.enable;
+      source = let
+        jsonFormat = pkgs.formats.json {};
+      in
+        jsonFormat.generate "slippi-config" {
+          settings = {
+            isoPath = cfg.isoPath;
 
-          launchMeleeOnPlay = cfg.launchMeleeOnPlay;
-          enableJukebox = cfg.enableJukebox;
+            launchMeleeOnPlay = cfg.launchMeleeOnPlay;
+            enableJukebox = cfg.enableJukebox;
 
-          rootSlpPath = cfg.rootSlpPath;
-          useMonthlySubfolders = cfg.useMonthlySubfolders;
-          spectateSlpPath = cfg.spectateSlpPath;
-          extraSlpPaths = cfg.extraSlpPaths;
+            rootSlpPath = cfg.rootSlpPath;
+            useMonthlySubfolders = cfg.useMonthlySubfolders;
+            spectateSlpPath = cfg.spectateSlpPath;
+            extraSlpPaths = cfg.extraSlpPaths;
 
-          netplayDolphinPath = cfg.netplayDolphinPath;
+            netplayDolphinPath = cfg.netplayDolphinPath;
 
-          playbackDolphinPath = cfg.playbackDolphinPath;
+            playbackDolphinPath = cfg.playbackDolphinPath;
 
-          autoUpdateLauncher = false;
+            autoUpdateLauncher = false;
+          };
         };
-      };
+    };
   };
 }
