@@ -3,7 +3,7 @@
   callAppImage,
 }:
 callAppImage rec {
-  pname = "slippi-netplay-appimage";
+  pname = "Slippi_Online-x86_64.AppImage";
   version = "3.4.0";
 
   appImageSrc = fetchurl {

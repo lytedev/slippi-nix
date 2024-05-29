@@ -11,7 +11,7 @@
 in
   callAppImage {
     inherit version;
-    pname = "slippi-playback-appimage";
+    pname = "Slippi_Playback-x86_64.AppImage";
 
     appImageSrc = "${zip}/Slippi_Playback-x86_64.AppImage";
 

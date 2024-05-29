@@ -6,7 +6,12 @@
     self,
     ...
   }: let
-    forSystems = nixpkgs.lib.genAttrs ["aarch64-linux" "aarch64-darwin" "x86_64-darwin" "x86_64-linux"];
+    forSystems = nixpkgs.lib.genAttrs [
+      # "aarch64-linux"
+      # "aarch64-darwin"
+      # "x86_64-darwin"
+      "x86_64-linux"
+    ];
     pkgsFor = system: ((import nixpkgs {inherit system;}).extend self.outputs.overlays.base);
   in {
     overlays = {
@@ -51,7 +56,7 @@
       };
 
       slippi = {
-        launcher = import ./modules/home-manager/slippi/launcher.nix {slippi = system: self.outputs.packages.${system}.slippi;};
+        launcher = import ./modules/home-manager/slippi/launcher.nix (system: self.outputs.packages.${system}.slippi);
       };
     };
   };
