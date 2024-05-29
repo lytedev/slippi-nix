@@ -41,7 +41,9 @@ in
       cp -r "$src/bin" "$out"
       cp -r "${appImageContents}/$(readlink "${appImageContents}/slippi-launcher.png")" "$out/share/applications/"
       sed '/Icon/d' "${appImageContents}/slippi-launcher.desktop" > "$out/share/applications/slippi-launcher.desktop"
+      sed '/Exec/d' "${appImageContents}/slippi-launcher.desktop" > "$out/share/applications/slippi-launcher.desktop"
       echo "Icon=$out/share/applications/slippi-launcher.png" >> "$out/share/applications/slippi-launcher.desktop"
+      echo "Exec=$out/bin/${pname} %U" >> "$out/share/applications/slippi-launcher.desktop"
 
       runHook postInstall
     '';
