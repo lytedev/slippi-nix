@@ -28,8 +28,8 @@ handle any updates very easily, though.
 `overrideAttrs`) to do this without forking.
 
 In your flake, you may optionally import the NixOS module for the overclocked
-adapter and you must import the Home Manager module for the Slippi Launcher.
-Here is an example:
+adapter and you must import the Home Manager module for the Slippi Launcher. You
+will also need to specify where your Melee ISO is. Here is an example:
 
 ```nix
 {
@@ -47,6 +47,10 @@ Here is an example:
             users.YOUR_USERNAME = {
               imports = with outputs.homeManagerModules; [
                 slippi.homeManagerModules.default
+                {
+                  # use your path
+                  slippi.launcher.isoPath = "/home/user/Downloads/melee.iso";
+                }
               ];
             };
           };
@@ -56,6 +60,15 @@ Here is an example:
   };
 }
 ```
+
+There are other configuration options if you take a look at the flake's source.
+Most useful to me is:
+
+```nix
+slippi.launcher.launchMeleeOnPlay = false;
+```
+
+As I prefer to be able to tweak Dolphin's settings before diving right in.
 
 # To Do
 
