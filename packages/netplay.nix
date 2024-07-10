@@ -2,12 +2,13 @@
   stdenvNoCC,
   appimageTools,
   fetchurl,
+  version ? "3.4.1",
+  hash ? "sha256-Ns0yhnb2H0wDj+vUtjSgujpVV8GjKrKSf+OoaCuXIKA=",
 }: let
   pname = "Slippi_Online-x86_64.AppImage";
-  version = "3.4.0";
   src = fetchurl {
+    inherit hash;
     url = "https://github.com/project-slippi/Ishiiruka/releases/download/v${version}/Slippi_Online-x86_64.AppImage";
-    hash = "sha256-phqQvVWrUu0jLE+exWTgRLM8RSUWCZ0RsBSXo2pP3SA=";
   };
 in
   stdenvNoCC.mkDerivation {

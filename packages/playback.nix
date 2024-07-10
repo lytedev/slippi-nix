@@ -2,12 +2,13 @@
   stdenvNoCC,
   appimageTools,
   fetchzip,
+  version ? "3.4.3",
+  hash ? "sha256-QsvayemrIztHSVcFh0I1/SOCoO6EsSTItrRQgqTWvG4=",
 }: let
-  version = "3.4.1";
   pname = "Slippi_Playback-x86_64.AppImage";
   zip = fetchzip {
+    inherit hash;
     url = "https://github.com/project-slippi/Ishiiruka-Playback/releases/download/v${version}/playback-${version}-Linux.zip";
-    hash = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
     stripRoot = false;
   };
   src = "${zip}/Slippi_Playback-x86_64.AppImage";

@@ -3,13 +3,14 @@
   appimageTools,
   fetchurl,
   copyDesktopItems,
+  version ? "2.11.6",
+  hash ? "sha256-pdBPCQ0GL7TFM5o48noc6Tovmeq+f2M3wpallems8aE=",
 }: let
   pname = "slippi-launcher-appimage";
-  version = "2.11.6";
 
   src = fetchurl {
+    inherit hash;
     url = "https://github.com/project-slippi/slippi-launcher/releases/download/v${version}/Slippi-Launcher-${version}-x86_64.AppImage";
-    hash = "sha256-pdBPCQ0GL7TFM5o48noc6Tovmeq+f2M3wpallems8aE=";
   };
 
   appImageContents = appimageTools.extractType2 {
