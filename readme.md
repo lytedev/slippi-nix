@@ -20,13 +20,6 @@ necessary configuration to handle a GameCube controller adapter. Additionally,
 you likely want to make use of the Slippi Launcher for managing and viewing
 your replays.
 
-Note that this does _not_ support auto-updates. You should be able to fork this
-repo and update the versions and hashes in the derivations in `./packages` to
-handle any updates very easily, though.
-
-> **TODO**: Show an example of simply overriding the packages attributes' (using
-`overrideAttrs`) to do this without forking.
-
 In your flake, you may optionally import the NixOS module for the overclocked
 adapter and you must import the Home Manager module for the Slippi Launcher. You
 will also need to specify where your Melee ISO is. Here is an example:
@@ -70,6 +63,24 @@ slippi.launcher.launchMeleeOnPlay = false;
 
 As I prefer to be able to tweak Dolphin's settings before diving right in.
 
+# Updates
+
+Note that this does _not_ support the auto-updates performed by Slippi Launcher.
+This Flake exposes extra configuration fields for specifying the version of the
+AppImage you want along with the hash like so:
+
+```nix
+{
+  home-manager.users.YOUR_USERNAME = {
+    slippi.launcher.netplayVersion = "3.4.0";
+    slippi.launcher.netplayHash = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
+  };
+}
+```
+
+So when a Slippi update is released, you can usually bump the version to match
+and update the hash with whatever `nix` says it is.
+
 # To Do
 
 It would be nice if Home Manager weren't strictly necessary. At the moment,
@@ -79,4 +90,5 @@ instead either be to specify to the launcher where the netplay and playback
 binaries are without the configuration file -- perhaps via command line
 arguments or environment variables.
 
-If this were true, you could simply `nix run 
+If this were true, you could simply `nix run github:lytedev/slippi-nix#netplay`
+and start playing right away, which is ideal!

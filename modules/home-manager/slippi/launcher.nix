@@ -7,6 +7,14 @@ slippiClosure: {
   inherit (lib) mkEnableOption mkOption types mkIf;
   cfg = config.slippi.launcher;
   slippi-packages = slippiClosure pkgs.system;
+  netplay-package = version: hash:
+    slippi-packages.netplay.overrideAttrs {
+      inherit version hash;
+    };
+  playback-package = version: hash:
+    slippi-packages.playback.overrideAttrs {
+      inherit version hash;
+    };
 in {
   # defaults here are true since we assume if you're importing the module, you
   # want it on ;)
@@ -14,7 +22,7 @@ in {
     enable = mkEnableOption "Install Slippi Launcher" // {default = true;};
 
     netplayVersion = mkOption {
-      default = "3.4.0";
+      default = "3.4.1";
       type = types.str;
       description = "The version of Slippi Netplay to install.";
     };
@@ -68,7 +76,7 @@ in {
     # TODO: I don't think these are actually used any longer.
     # Let's mark this field as deprecated?
     netplayDolphinPath = mkOption {
-      default = "${slippi-packages.netplay}/bin/";
+      default = "${netplay-package cfg.netplayVersion cfg.netplayHash}/bin/";
       type = types.str;
       description = "The path to the folder containing the Netplay Dolphin Executable";
     };
@@ -76,7 +84,7 @@ in {
     # TODO: I don't think these are actually used any longer.
     # Let's mark this field as deprecated?
     playbackDolphinPath = mkOption {
-      default = "${slippi-packages.playback}/bin/";
+      default = "${playback-package cfg.netplayVersion cfg.netplayHash}/bin/";
       type = types.str;
       description = "The path to the folder containing the Playback Dolphin Executable";
     };
@@ -112,10 +120,6 @@ in {
         }
       }/Sys";
       recursive = false;
-    };
-    home.file.".config/Slippi Launcher/poopoobutt" = {
-      enable = cfg.enable;
-      text = "wth is happening";
     };
     xdg.configFile."Slippi Launcher/Settings" = {
       enable = cfg.enable;
