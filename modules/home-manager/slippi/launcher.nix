@@ -72,28 +72,15 @@ in {
       type = types.listOf types.str;
       description = "Choose any additional SLP directories that should show up in the replay browser.";
     };
-
-    # TODO: I don't think these are actually used any longer.
-    # Let's mark this field as deprecated?
-    netplayDolphinPath = mkOption {
-      default = "${netplay-package cfg.netplayVersion cfg.netplayHash}/bin/";
-      type = types.str;
-      description = "The path to the folder containing the Netplay Dolphin Executable";
-    };
-
-    # TODO: I don't think these are actually used any longer.
-    # Let's mark this field as deprecated?
-    playbackDolphinPath = mkOption {
-      default = "${playback-package cfg.netplayVersion cfg.netplayHash}/bin/";
-      type = types.str;
-      description = "The path to the folder containing the Playback Dolphin Executable";
-    };
   };
-  config = {
+  config = let
+    cfgNetplayPackage = netplay-package cfg.netplayVersion cfg.netplayHash;
+    cfgPlaybackPackage = playback-package cfg.playbackVersion cfg.playbackHash;
+  in {
     home.packages = [(mkIf cfg.enable slippi-packages.launcher)];
     home.file.".config/Slippi Launcher/netplay/Slippi_Online-x86_64.AppImage" = {
       enable = cfg.enable;
-      source = "${slippi-packages.netplay}/bin/Slippi_Online-x86_64.AppImage";
+      source = "${cfgNetplayPackage}/bin/Slippi_Online-x86_64.AppImage";
       recursive = false;
     };
     home.file.".config/Slippi Launcher/netplay/Sys" = {
@@ -107,7 +94,7 @@ in {
     };
     home.file.".config/Slippi Launcher/playback/Slippi_Playback-x86_64.AppImage" = {
       enable = cfg.enable;
-      source = "${slippi-packages.playback}/bin/Slippi_Playback-x86_64.AppImage";
+      source = "${cfgPlaybackPackage}/bin/Slippi_Playback-x86_64.AppImage";
       recursive = false;
     };
     home.file.".config/Slippi Launcher/playback/Sys" = {
@@ -138,9 +125,8 @@ in {
             spectateSlpPath = cfg.spectateSlpPath;
             extraSlpPaths = cfg.extraSlpPaths;
 
-            netplayDolphinPath = cfg.netplayDolphinPath;
-
-            playbackDolphinPath = cfg.playbackDolphinPath;
+            netplayDolphinPath = "${cfgNetplayPackage}/bin/";
+            playbackDolphinPath = "${cfgPlaybackPackage}/bin/";
 
             autoUpdateLauncher = false;
           };

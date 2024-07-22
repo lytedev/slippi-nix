@@ -74,6 +74,8 @@ AppImage you want along with the hash like so:
   home-manager.users.YOUR_USERNAME = {
     slippi.launcher.netplayVersion = "3.4.0";
     slippi.launcher.netplayHash = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
+    slippi.launcher.playbackVersion = "3.4.0";
+    slippi.launcher.playbackHash = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
   };
 }
 ```
