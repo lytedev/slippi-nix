@@ -5,7 +5,7 @@ slippiClosure: {
   ...
 }: let
   inherit (lib) mkEnableOption mkOption types mkIf;
-  cfg = config.slippi.launcher;
+  cfg = config.slippi-launcher;
   slippi-packages = slippiClosure pkgs.system;
   netplay-package = version: hash:
     slippi-packages.netplay.overrideAttrs {
@@ -18,7 +18,7 @@ slippiClosure: {
 in {
   # defaults here are true since we assume if you're importing the module, you
   # want it on ;)
-  options.slippi.launcher = {
+  options.slippi-launcher = {
     enable = mkEnableOption "Install Slippi Launcher" // {default = true;};
 
     netplayVersion = mkOption {
