@@ -1,5 +1,7 @@
 # slippi-nix
 
+![build status](https://github.com/lytedev/slippi-nix/actions/workflows/build-and-cache.yaml/badge.svg)
+
 This project is a Flake which exposes NixOS modules for ensuring your GameCube
 controller adapter is performing as well is it can be and Home Manager modules
 for installing and configuring the Slippi Launcher using NixOS-compatible
@@ -86,6 +88,20 @@ AppImage you want along with the hash like so:
 
 So when a Slippi update is released, you can usually bump the version to match
 and update the hash with whatever `nix` says it is.
+
+# Cache
+
+You may also want to leverage our Cachix binary cache. There isn't _much_
+purpose to it since the "build" steps are just unpacking the AppImages and
+repacking them in a format that works with Nix, but they graciously provide one
+to us freely.
+
+```nix
+nixConfig = {
+  extra-substituters = ["https://slippi-nix.cachix.org"];
+  extra-trusted-public-keys = ["slippi-nix.cachix.org-1:2qnPHiOxTRpzgLEtx6K4kXq/ySDg7zHEJ58J6xNDvBo="];
+};
+```
 
 # To Do
 
