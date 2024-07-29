@@ -1,4 +1,4 @@
-on: {"pull_request":{},"push":{}}
+on: {"push":{"branches":["!main"]}}
 jobs:
   build:
     name: nix flake check
