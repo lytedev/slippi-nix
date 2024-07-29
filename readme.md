@@ -1,6 +1,6 @@
 # slippi-nix
 
-![[build status](https://github.com/lytedev/slippi-nix/actions/workflows/build-and-cache.yaml/badge.svg)(https://github.com/lytedev/slippi-nix/actions/workflows/build-and-cache.yaml)]
+[![build status](https://github.com/lytedev/slippi-nix/actions/workflows/build-and-cache.yaml/badge.svg)](https://github.com/lytedev/slippi-nix/actions/workflows/build-and-cache.yaml)
 
 This project is a Flake which exposes NixOS modules for ensuring your GameCube
 controller adapter is performing as well is it can be and Home Manager modules
