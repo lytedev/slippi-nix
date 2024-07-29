@@ -5,14 +5,18 @@ controller adapter is performing as well is it can be and Home Manager modules
 for installing and configuring the Slippi Launcher using NixOS-compatible
 versions of both the playback and netplay builds of Dolphin (Ishiiruka).
 
-**NOTE**: At this time, this Flake only supports the `x86_64-linux` `system`.
+**NOTE**: At this time, this Flake only supports the `x86_64-linux` `system`
+(since it consumes AppImages that support the same). If you are using Linux on
+another CPU architecture, please reach out! If you are using macOS, install the
+launcher from https://slippi.gg/downloads directly; I don't recommend using Nix
+to manage your Slippi installation in that case.
 
 # Usage
 
 The simplest usage is to simply run the netplay package in this Flake:
 
 ```shell
-nix run github:lytedev/slippi-nix#slippi.netplay
+nix run github:lytedev/slippi-nix#slippi-netplay
 ```
 
 However, for the optimal experience, you will want to ensure the host has the
@@ -42,7 +46,7 @@ will also need to specify where your Melee ISO is. Here is an example:
                 slippi.homeManagerModules.default
                 {
                   # use your path
-                  slippi.launcher.isoPath = "/home/user/Downloads/melee.iso";
+                  slippi-launcher.isoPath = "/home/user/Downloads/melee.iso";
                 }
               ];
             };
@@ -58,7 +62,7 @@ There are other configuration options if you take a look at the flake's source.
 Most useful to me is:
 
 ```nix
-slippi.launcher.launchMeleeOnPlay = false;
+slippi-launcher.launchMeleeOnPlay = false;
 ```
 
 As I prefer to be able to tweak Dolphin's settings before diving right in.
@@ -72,10 +76,10 @@ AppImage you want along with the hash like so:
 ```nix
 {
   home-manager.users.YOUR_USERNAME = {
-    slippi.launcher.netplayVersion = "3.4.0";
-    slippi.launcher.netplayHash = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
-    slippi.launcher.playbackVersion = "3.4.0";
-    slippi.launcher.playbackHash = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
+    slippi-launcher.netplayVersion = "3.4.0";
+    slippi-launcher.netplayHash = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
+    slippi-launcher.playbackVersion = "3.4.0";
+    slippi-launcher.playbackHash = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
   };
 }
 ```
