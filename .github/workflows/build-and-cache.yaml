@@ -1,7 +1,7 @@
 on: {"push":{"branches":["main"]}}
 jobs:
   build:
-    name: nix flake check
+    name: build and cache
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
