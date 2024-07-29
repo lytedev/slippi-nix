@@ -1,6 +1,7 @@
 on: {"push":{"branches":["main"]}}
 jobs:
   build:
+    environment: "slippi-nix.cachix.org"
     name: build and cache
     runs-on: ubuntu-22.04
     steps:
