@@ -2,8 +2,8 @@
   stdenvNoCC,
   appimageTools,
   fetchurl,
-  version ? "3.4.1",
-  hash ? "sha256-Ns0yhnb2H0wDj+vUtjSgujpVV8GjKrKSf+OoaCuXIKA=",
+  version ? "3.4.2",
+  hash ? "sha256-YXvSN+4NOvTuWErdOSEHBbP6rVsvNJCsJZu5C4VCH40=",
 }: let
   pname = "Slippi_Online-x86_64.AppImage";
   src = fetchurl {

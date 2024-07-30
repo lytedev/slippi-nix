@@ -22,25 +22,25 @@ in {
     enable = mkEnableOption "Install Slippi Launcher" // {default = true;};
 
     netplayVersion = mkOption {
-      default = "3.4.1";
-      type = types.str;
-      description = "The version of Slippi Netplay to install.";
+      default = null;
+      type = types.nullOr types.str;
+      description = "The version of Slippi Netplay to install. Will fallback to the defaults for the package if left null.";
     };
     netplayHash = mkOption {
-      default = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
-      type = types.str;
-      description = "The hash of the Slippi Netplay zip to install.";
+      default = null;
+      type = types.nullOr types.str;
+      description = "The hash of the Slippi Netplay zip to install. Will fallback to the defaults for the package if left null.";
     };
 
     playbackVersion = mkOption {
-      default = "3.4.1";
-      type = types.str;
-      description = "The version of Slippi Playback to install.";
+      default = null;
+      type = types.nullOr types.str;
+      description = "The version of Slippi Playback to install. Will fallback to the defaults for the package if left null.";
     };
     playbackHash = mkOption {
-      default = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
-      type = types.str;
-      description = "The hash of the Slippi Playback zip to install.";
+      default = null;
+      type = types.nullOr types.str;
+      description = "The hash of the Slippi Playback zip to install. Will fallback to the defaults for the package if left null.";
     };
 
     isoPath = mkOption {
