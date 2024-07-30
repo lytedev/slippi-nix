@@ -3,6 +3,8 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     git-hooks.url = "github:cachix/git-hooks.nix";
     git-hooks.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager.url = "github:nix-community/home-manager";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   nixConfig = {
@@ -18,9 +20,26 @@
   outputs = {
     nixpkgs,
     git-hooks,
+    home-manager,
     self,
     ...
   }: let
+    defaults = {
+      netplay = {
+        version = "3.4.2";
+        hash = "sha256-XSVEk3k7Eq55VtkFUD2biLYUt0bUKRh2PKIpWmdx5Uo=";
+      };
+      playback = {
+        version = "3.4.3";
+        hash = "sha256-QsvayemrIztHSVcFh0I1/SOCoO6EsSTItrRQgqTWvG4=";
+      };
+      launcher = {
+        version = "2.11.6";
+        hash = "sha256-pdBPCQ0GL7TFM5o48noc6Tovmeq+f2M3wpallems8aE=";
+      };
+    };
+
+    inherit (self) outputs;
     forSystems = nixpkgs.lib.genAttrs [
       # "aarch64-linux"
       # "aarch64-darwin"
@@ -31,27 +50,29 @@
     genPkgs = func: (forSystems (system: func (pkgsFor system)));
   in {
     overlays = {
-      default = self.outputs.overlays.slippi;
+      default = outputs.overlays.slippi;
 
       slippi = final: prev: {
-        inherit (self.outputs.packages.${final.system}.slippi) slippi-netplay slippi-playback slippi-launcher;
+        inherit (outputs.packages.${final.system}.slippi) slippi-netplay slippi-playback slippi-launcher;
       };
     };
 
     packages = genPkgs (pkgs: {
-      default = self.outputs.packages.${pkgs.system}.slippi-launcher;
-      slippi-netplay = {
+      default = outputs.packages.${pkgs.system}.slippi-launcher;
+      slippi-netplay = pkgs.callPackage ({
         stdenvNoCC,
         appimageTools,
-        fetchurl,
-        version ? "3.4.2",
-        hash ? "sha256-YXvSN+4NOvTuWErdOSEHBbP6rVsvNJCsJZu5C4VCH40=",
+        fetchzip,
+        version ? defaults.netplay.version,
+        hash ? defaults.netplay.hash,
       }: let
         pname = "Slippi_Online-x86_64.AppImage";
-        src = fetchurl {
+        zip = fetchzip {
           inherit hash;
-          url = "https://github.com/project-slippi/Ishiiruka/releases/download/v${version}/Slippi_Online-x86_64.AppImage";
+          url = "https://github.com/project-slippi/Ishiiruka/releases/download/v${version}/FM-Slippi-${version}-Linux.zip";
+          stripRoot = false;
         };
+        src = "${zip}/Slippi_Online-x86_64.AppImage";
       in
         stdenvNoCC.mkDerivation {
           inherit pname version;
@@ -75,13 +96,13 @@
 
             runHook postInstall
           '';
-        };
-      slippi-playback = {
+        }) {};
+      slippi-playback = pkgs.callPackage ({
         stdenvNoCC,
         appimageTools,
         fetchzip,
-        version ? "3.4.3",
-        hash ? "sha256-QsvayemrIztHSVcFh0I1/SOCoO6EsSTItrRQgqTWvG4=",
+        version ? defaults.playback.version,
+        hash ? defaults.playback.hash,
       }: let
         pname = "Slippi_Playback-x86_64.AppImage";
         zip = fetchzip {
@@ -113,14 +134,14 @@
 
             runHook postInstall
           '';
-        };
-      slippi-launcher = {
+        }) {};
+      slippi-launcher = pkgs.callPackage ({
         stdenvNoCC,
         appimageTools,
         fetchurl,
         copyDesktopItems,
-        version ? "2.11.6",
-        hash ? "sha256-pdBPCQ0GL7TFM5o48noc6Tovmeq+f2M3wpallems8aE=",
+        version ? defaults.launcher.version,
+        hash ? defaults.launcher.hash,
       }: let
         pname = "slippi-launcher-appimage";
 
@@ -166,23 +187,59 @@
           '';
 
           nativeBuildInputs = [copyDesktopItems];
-        };
+        }) {};
     });
 
-    checks =
-      genPkgs (pkgs: {
-        git-hooks = git-hooks.lib.${pkgs.system}.run {
-          src = ./.;
-          hooks = {
-            alejandra.enable = true;
-          };
+    checks = genPkgs (pkgs: {
+      inherit (outputs.packages.${pkgs.system}) slippi-launcher slippi-netplay slippi-playback;
+      git-hooks = git-hooks.lib.${pkgs.system}.run {
+        src = ./.;
+        hooks = {
+          alejandra.enable = true;
         };
-      })
-      // self.outputs.packages;
+      };
+      home-manager-module-test = pkgs.testers.runNixOSTest {
+        # a simple integration test to ensure that the home manager module works and boots a host
+        name = "home-manager-module-test";
+        nodes.machine = {
+          config,
+          pkgs,
+          ...
+        }: {
+          imports = [
+            home-manager.nixosModules.home-manager
+          ];
+          users.users.daniel = {
+            isNormalUser = true;
+            home = "/home/daniel";
+            createHome = true;
+            extraGroups = ["wheel" "users"];
+          };
+          home-manager.users.daniel = {
+            imports = with outputs.homeManagerModules; [
+              slippi-launcher
+            ];
+            slippi-launcher.enable = true;
+            home = {
+              username = "daniel";
+              homeDirectory = "/home/daniel";
+              stateVersion = "24.11";
+            };
+          };
+          system.stateVersion = "24.11";
+        };
+        testScript = {nodes, ...}: ''
+          machine.wait_for_unit("default.target")
+          print(machine.succeed("ls -laR /home/daniel/.config"))
+          print(machine.succeed("grep ${defaults.netplay.version} '/home/daniel/.config/Slippi Launcher/Settings'"))
+          print(machine.succeed("grep ${defaults.playback.version} '/home/daniel/.config/Slippi Launcher/Settings'"))
+        '';
+      };
+    });
 
     nixosModules = {
       default = {
-        imports = with self.outputs.nixosModules; [
+        imports = with outputs.nixosModules; [
           gamecube-controller-adapter
         ];
       };
@@ -231,7 +288,7 @@
 
     homeManagerModules = {
       default = {
-        imports = with self.outputs.homeManagerModules; [
+        imports = with outputs.homeManagerModules; [
           slippi-launcher
         ];
       };
@@ -244,14 +301,17 @@
       }: let
         inherit (lib) mkEnableOption mkOption types mkIf;
         cfg = config.slippi-launcher;
-        flakePackages = self.outputs.packages.${pkgs.system};
-        netplay-package = version: hash: (
-          flakePackages.slippi-netplay.overrideAttrs (lib.filterAttrs (_: v: v != null) {
+        flakePackages = outputs.packages.${pkgs.system};
+        netplay-package = version: hash:
+          flakePackages.slippi-netplay.overrideAttrs {
             inherit version hash;
-          })
-        );
+          };
         playback-package = version: hash:
           flakePackages.slippi-playback.overrideAttrs {
+            inherit version hash;
+          };
+        launcher-package = version: hash:
+          flakePackages.slippi-launcher.overrideAttrs {
             inherit version hash;
           };
       in {
@@ -261,25 +321,36 @@
           enable = mkEnableOption "Install Slippi Launcher" // {default = true;};
 
           netplayVersion = mkOption {
-            default = null;
-            type = types.nullOr types.str;
-            description = "The version of Slippi Netplay to install. Will fallback to the defaults for the package if left null.";
+            default = defaults.netplay.version;
+            type = types.str;
+            description = "The version of Slippi Netplay to install.";
           };
           netplayHash = mkOption {
-            default = null;
-            type = types.nullOr types.str;
-            description = "The hash of the Slippi Netplay zip to install. Will fallback to the defaults for the package if left null.";
+            default = defaults.netplay.hash;
+            type = types.str;
+            description = "The hash of the Slippi Netplay AppImage to install.";
           };
 
           playbackVersion = mkOption {
-            default = null;
-            type = types.nullOr types.str;
-            description = "The version of Slippi Playback to install. Will fallback to the defaults for the package if left null.";
+            default = defaults.playback.version;
+            type = types.str;
+            description = "The version of Slippi Playback to install.";
           };
           playbackHash = mkOption {
-            default = null;
-            type = types.nullOr types.str;
-            description = "The hash of the Slippi Playback zip to install. Will fallback to the defaults for the package if left null.";
+            default = defaults.playback.hash;
+            type = types.str;
+            description = "The hash of the Slippi Playback AppImage to install.";
+          };
+
+          launcherVersion = mkOption {
+            default = defaults.launcher.version;
+            type = types.str;
+            description = "The version of Slippi Launcher to install.";
+          };
+          launcherHash = mkOption {
+            default = defaults.launcher.hash;
+            type = types.str;
+            description = "The hash of the Slippi Launcher AppImage to install.";
           };
 
           isoPath = mkOption {
@@ -315,8 +386,9 @@
         config = let
           cfgNetplayPackage = netplay-package cfg.netplayVersion cfg.netplayHash;
           cfgPlaybackPackage = playback-package cfg.playbackVersion cfg.playbackHash;
+          cfgLauncherPackage = launcher-package cfg.launcherVersion cfg.launcherHash;
         in {
-          home.packages = [(mkIf cfg.enable flakePackages.slippi-launcher)];
+          home.packages = [(mkIf cfg.enable cfgLauncherPackage)];
           home.file.".config/Slippi Launcher/netplay/Slippi_Online-x86_64.AppImage" = {
             enable = cfg.enable;
             source = "${cfgNetplayPackage}/bin/Slippi_Online-x86_64.AppImage";
