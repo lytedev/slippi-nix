@@ -199,7 +199,10 @@
         };
       };
       home-manager-module-test = pkgs.testers.runNixOSTest {
-        # a simple integration test to ensure that the home manager module works and boots a host
+        # a simple integration test to ensure that the home manager module
+        # works, boots a host, implying a successful NixOS configuration, and
+        # creates the configuration file referencing the correct packages'
+        # versions
         name = "home-manager-module-test";
         nodes.machine = {
           config,
