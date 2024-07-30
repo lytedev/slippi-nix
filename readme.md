@@ -72,8 +72,18 @@ As I prefer to be able to tweak Dolphin's settings before diving right in.
 # Updates
 
 Note that this does _not_ support the auto-updates performed by Slippi Launcher.
-This Flake exposes extra configuration fields for specifying the version of the
-AppImage you want along with the hash like so:
+Instead, when updates are pushed here, you must update your input reference to
+this flake and then your system.
+
+```shell_session
+nix flake lock --update-input slippi-nix # use whatever name you gave this flake as input!
+sudo nixos-rebuild switch --flake .
+```
+
+In the event that this repo is out-of-date and an update was newly pushed out
+and you do not want to wait, or you prefer to be in control, this Flake exposes
+extra configuration fields for specifying the version of the AppImage you want
+along with the hash like so:
 
 ```nix
 {
