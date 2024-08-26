@@ -84,6 +84,7 @@
             postInstall = ''
               ls -la "$out"
               wrapProgram $out/bin/${pname}-${version} \
+                --prefix LD_LIBRARY_PATH : "${pkgs.vulkan-loader}/lib" \
                 --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations}}"
             '';
           };
@@ -122,6 +123,7 @@
             postInstall = ''
               ls -la "$out"
               wrapProgram $out/bin/${pname}-${version} \
+                --prefix LD_LIBRARY_PATH : "${pkgs.vulkan-loader}/lib" \
                 --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations}}"
             '';
           };
@@ -164,6 +166,7 @@
             postInstall = ''
               ls -la "$out"
               wrapProgram $out/bin/${pname}-${version} \
+                --prefix LD_LIBRARY_PATH : "${pkgs.vulkan-loader}/lib" \
                 --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations}}"
             '';
           };
