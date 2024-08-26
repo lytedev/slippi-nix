@@ -79,7 +79,7 @@
 
           src = appimageTools.wrapType2 {
             inherit pname version src;
-            extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader];
+            extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader mesa mesa.drivers];
 
             postInstall = ''
               ls -la "$out"
@@ -118,7 +118,7 @@
 
           src = appimageTools.wrapType2 {
             inherit pname version src;
-            extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader];
+            extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader mesa mesa.drivers];
 
             postInstall = ''
               ls -la "$out"
@@ -161,7 +161,7 @@
 
           src = appimageTools.wrapType2 {
             inherit pname version src;
-            extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader];
+            extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader mesa mesa.drivers];
 
             postInstall = ''
               ls -la "$out"
