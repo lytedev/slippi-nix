@@ -82,6 +82,7 @@
             nativeBuildInputs = [
               pkgs.wrapGAppsHook4
             ];
+            extraPkgs = pkgs: with pkgs; [curl zlib mpg123];
             # extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader mesa mesa.drivers wrapGAppsHook];
 
             postInstall = ''
@@ -122,6 +123,7 @@
             nativeBuildInputs = [
               pkgs.wrapGAppsHook4
             ];
+            extraPkgs = pkgs: with pkgs; [curl zlib mpg123];
             # extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader mesa mesa.drivers wrapGAppsHook];
 
             postInstall = ''
@@ -166,7 +168,7 @@
             nativeBuildInputs = [
               pkgs.wrapGAppsHook4
             ];
-            # extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader mesa mesa.drivers wrapGAppsHook];
+            extraPkgs = pkgs: with pkgs; [curl zlib mpg123];
 
             postInstall = ''
               ls -la "$out"
