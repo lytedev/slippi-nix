@@ -79,6 +79,9 @@
 
           src = appimageTools.wrapType2 {
             inherit pname version src;
+            nativeBuildInputs = [
+              pkgs.wrapGAppsHook4
+            ];
             # extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader mesa mesa.drivers wrapGAppsHook];
 
             postInstall = ''
@@ -116,6 +119,9 @@
 
           src = appimageTools.wrapType2 {
             inherit pname version src;
+            nativeBuildInputs = [
+              pkgs.wrapGAppsHook4
+            ];
             # extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader mesa mesa.drivers wrapGAppsHook];
 
             postInstall = ''
@@ -157,6 +163,9 @@
 
           src = appimageTools.wrapType2 {
             inherit pname version src;
+            nativeBuildInputs = [
+              pkgs.wrapGAppsHook4
+            ];
             # extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader mesa mesa.drivers wrapGAppsHook];
 
             postInstall = ''
