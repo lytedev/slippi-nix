@@ -79,14 +79,11 @@
 
           src = appimageTools.wrapType2 {
             inherit pname version src;
-            extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader mesa mesa.drivers wrapGAppsHook];
+            # extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader mesa mesa.drivers wrapGAppsHook];
 
             postInstall = ''
               ls -la "$out"
               wrapProgram $out/bin/${pname}-${version} \
-                # --set "GDK_BACKEND" "wayland" \
-                # --prefix LD_LIBRARY_PATH : "${pkgs.vulkan-loader}/lib" \
-                # --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations}}"
             '';
           };
 
@@ -119,14 +116,11 @@
 
           src = appimageTools.wrapType2 {
             inherit pname version src;
-            extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader mesa mesa.drivers wrapGAppsHook];
+            # extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader mesa mesa.drivers wrapGAppsHook];
 
             postInstall = ''
               ls -la "$out"
               wrapProgram $out/bin/${pname}-${version} \
-                # --set "GDK_BACKEND" "wayland" \
-                # --prefix LD_LIBRARY_PATH : "${pkgs.vulkan-loader}/lib" \
-                # --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations}}"
             '';
           };
 
@@ -163,14 +157,11 @@
 
           src = appimageTools.wrapType2 {
             inherit pname version src;
-            extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader mesa mesa.drivers wrapGAppsHook];
+            # extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader mesa mesa.drivers wrapGAppsHook];
 
             postInstall = ''
               ls -la "$out"
               wrapProgram $out/bin/${pname}-${version} \
-                # --set "GDK_BACKEND" "wayland" \
-                # --prefix LD_LIBRARY_PATH : "${pkgs.vulkan-loader}/lib" \
-                # --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations}}"
             '';
           };
 
