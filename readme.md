@@ -124,3 +124,7 @@ arguments or environment variables.
 
 If this were true, you could simply `nix run github:lytedev/slippi-nix#netplay`
 and start playing right away, which is ideal!
+
+# License
+
+This project is licensed under the [MIT](./license) license.
