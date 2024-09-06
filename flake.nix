@@ -190,6 +190,8 @@
         }) {};
     });
 
+    formatter = genPkgs (p: p.alejandra);
+
     checks = genPkgs (pkgs: {
       inherit (outputs.packages.${pkgs.system}) slippi-launcher slippi-netplay slippi-playback;
       git-hooks = git-hooks.lib.${pkgs.system}.run {
@@ -208,34 +210,97 @@
           config,
           pkgs,
           ...
-        }: {
-          imports = [
-            home-manager.nixosModules.home-manager
-          ];
-          users.users.daniel = {
-            isNormalUser = true;
-            home = "/home/daniel";
-            createHome = true;
-            extraGroups = ["wheel" "users"];
-          };
-          home-manager.users.daniel = {
-            imports = with outputs.homeManagerModules; [
-              slippi-launcher
+        }:
+          with pkgs.lib; {
+            imports = [
+              home-manager.nixosModules.home-manager
+              (
+                # nixos/tests/common/auto.nix from nixpkgs
+                {config, ...}: let
+                  cfg = config.test-support.displayManager.auto;
+                in {
+                  options = {
+                    test-support.displayManager.auto = {
+                      enable = mkOption {
+                        default = false;
+                        description = ''
+                          Whether to enable the fake "auto" display manager, which
+                          automatically logs in the user specified in the
+                          {option}`user` option.  This is mostly useful for
+                          automated tests.
+                        '';
+                      };
+                      user = mkOption {
+                        default = "root";
+                        description = "The user account to login automatically.";
+                      };
+                    };
+                  };
+                  config = {
+                    services.xserver.displayManager.lightdm.enable = cfg.enable;
+                    services.displayManager.autoLogin = {
+                      enable = cfg.enable;
+                      user = cfg.user;
+                    };
+                    security.pam.services.lightdm-autologin.text = mkIf cfg.enable (mkForce ''
+                      auth     requisite pam_nologin.so
+                      auth     required  pam_succeed_if.so quiet
+                      auth     required  pam_permit.so
+                      account  include   lightdm
+                      password include   lightdm
+                      session  include   lightdm
+                    '');
+                  };
+                }
+              )
+              {
+                services.xserver.enable = true;
+                test-support.displayManager.auto.enable = true;
+                services.displayManager.defaultSession = mkDefault "none+icewm";
+                services.xserver.windowManager.icewm.enable = true;
+              }
             ];
-            slippi-launcher.enable = true;
-            home = {
-              username = "daniel";
-              homeDirectory = "/home/daniel";
-              stateVersion = "24.11";
+            users.users.daniel = {
+              isNormalUser = true;
+              home = "/home/daniel";
+              createHome = true;
+              extraGroups = ["wheel" "users"];
             };
+            test-support.displayManager.auto.user = "daniel";
+            home-manager.users.daniel = {
+              imports = with outputs.homeManagerModules; [
+                slippi-launcher
+              ];
+              slippi-launcher.enable = true;
+              home = {
+                username = "daniel";
+                homeDirectory = "/home/daniel";
+                stateVersion = "24.11";
+              };
+            };
+            environment.systemPackages = with pkgs; [jq];
+            system.stateVersion = "24.11";
           };
-          system.stateVersion = "24.11";
-        };
         testScript = {nodes, ...}: ''
-          machine.wait_for_unit("default.target")
-          print(machine.succeed("ls -laR /home/daniel/.config"))
-          print(machine.succeed("grep ${defaults.netplay.version} '/home/daniel/.config/Slippi Launcher/Settings'"))
-          print(machine.succeed("grep ${defaults.playback.version} '/home/daniel/.config/Slippi Launcher/Settings'"))
+          def as_user(cmd: str):
+              """
+              Return a shell command for running a shell command as a specific user.
+              """
+              return f"sudo -u daniel -i -- bash -c \"{cmd}\""
+
+          with subtest("ensure slippi launcher settings file references correct versions"):
+              machine.wait_for_unit("default.target")
+              machine.succeed("grep ${defaults.netplay.version} '/home/daniel/.config/Slippi Launcher/Settings'")
+              machine.succeed("grep ${defaults.playback.version} '/home/daniel/.config/Slippi Launcher/Settings'")
+
+          with subtest("ensure netplay appimage version is correct"):
+              machine.wait_for_unit("default.target")
+              machine.wait_for_x()
+              machine.wait_for_file("/home/daniel/.Xauthority")
+              machine.succeed("xauth merge /home/daniel/.Xauthority")
+              machine.succeed(as_user("""
+              "''$(jq -r '.settings.netplayDolphinPath' '/home/daniel/.config/Slippi Launcher/Settings')/Slippi_Online-x86_64.AppImage" --version | grep ${defaults.netplay.version}
+              """))
         '';
       };
     });
