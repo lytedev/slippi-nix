@@ -69,11 +69,9 @@
         fetchzip,
         makeWrapper,
         lib,
-
         version ? defaults.netplay-beta.version,
         hash ? defaults.netplay-beta.hash,
-      }:
-      let
+      }: let
         pname = "Slippi_Netplay_Mainline-x86_64.AppImage";
         zip = fetchzip {
           inherit hash;
@@ -82,25 +80,25 @@
         };
         src = "${zip}/Slippi_Netplay_Mainline-x86_64.AppImage";
       in
-      stdenvNoCC.mkDerivation {
-        inherit pname version;
-        nativeBuildInputs = [
-          makeWrapper
-        ];
-        src = appimageTools.wrapType2 {
-          inherit pname version src;
-          extraPkgs = pkgs: with pkgs; [ curl libsForQt5.qt5.qttools ];
-        };
+        stdenvNoCC.mkDerivation {
+          inherit pname version;
+          nativeBuildInputs = [
+            makeWrapper
+          ];
+          src = appimageTools.wrapType2 {
+            inherit pname version src;
+            extraPkgs = pkgs: with pkgs; [curl libsForQt5.qt5.qttools];
+          };
 
-        installPhase = ''
-          runHook preInstall
-          mkdir -p "$out/bin"
-          cp -r "$src/bin" "$out"
-          wrapProgram $out/bin/${pname} \
-            --set QT_QPA_PLATFORM xcb
-          runHook postInstall
-        '';
-      }) {};
+          installPhase = ''
+            runHook preInstall
+            mkdir -p "$out/bin"
+            cp -r "$src/bin" "$out"
+            wrapProgram $out/bin/${pname} \
+              --set QT_QPA_PLATFORM xcb
+            runHook postInstall
+          '';
+        }) {};
       slippi-netplay = pkgs.callPackage ({
         stdenvNoCC,
         appimageTools,
@@ -121,7 +119,7 @@
 
           src = appimageTools.wrapType2 {
             inherit pname version src;
-            extraPkgs = pkgs: with pkgs; [curl zlib mpg123 ];
+            extraPkgs = pkgs: with pkgs; [curl zlib mpg123];
 
             postInstall = ''
               ls -la "$out"
@@ -483,7 +481,7 @@
             type = types.str;
             description = "The path to an NTSC Melee ISO.";
           };
-          useNetplayBeta = mkEnableOption "Use the mainline Dolphin instead of the stable version." // { default = false; };
+          useNetplayBeta = mkEnableOption "Use the mainline Dolphin instead of the stable version." // {default = false;};
 
           launchMeleeOnPlay = mkEnableOption "Launch Melee in Dolphin when the Play button is pressed." // {default = true;};
 
@@ -532,7 +530,7 @@
           };
           home.file.".config/Slippi Launcher/netplay-beta/Slippi_Netplay_Mainline-x86_64.AppImage" = {
             enable = cfg.useNetplayBeta;
-            source  = "${cfgNetplayBetaPackage}/bin/Slippi_Netplay_Mainline-x86_64.AppImage";
+            source = "${cfgNetplayBetaPackage}/bin/Slippi_Netplay_Mainline-x86_64.AppImage";
             recursive = false;
           };
           home.file.".config/Slippi Launcher/netplay-beta/Sys" = {
@@ -578,7 +576,11 @@
                   spectateSlpPath = cfg.spectateSlpPath;
                   extraSlpPaths = cfg.extraSlpPaths;
 
-                  netplayDolphinPath = "${if cfg.useNetplayBeta then cfgNetplayBetaPackage else cfgNetplayPackage}/bin/";
+                  netplayDolphinPath = "${
+                    if cfg.useNetplayBeta
+                    then cfgNetplayBetaPackage
+                    else cfgNetplayPackage
+                  }/bin/";
                   playbackDolphinPath = "${cfgPlaybackPackage}/bin/";
 
                   autoUpdateLauncher = false;
