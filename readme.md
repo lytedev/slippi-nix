@@ -90,6 +90,8 @@ along with the hash like so:
   home-manager.users.YOUR_USERNAME = {
     slippi-launcher.netplayVersion = "3.4.0";
     slippi-launcher.netplayHash = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
+    slippi-launcher.netplayBetaVersion = "4.0.0-mainline-beta.6";
+    slippi-launcher.netplayBetaHash = "sha256-CicAZ28+yiagG3bjosu02azV6XzP7+JnLhUJ3hdeQbI=";
     slippi-launcher.playbackVersion = "3.4.0";
     slippi-launcher.playbackHash = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
   };
@@ -98,6 +100,17 @@ along with the hash like so:
 
 So when a Slippi update is released, you can usually bump the version to match
 and update the hash with whatever `nix` says it is.
+
+# Beta
+You can enable the beta netplay client by adding this to the configuration:
+```nix
+{
+  home-manager.users.YOUR_USERNAME = {
+    slippi-launcher.useBetaNetplay = true;
+  };
+}
+```
+The beta netplay client is *not* downloaded unless it is enabled. When enabled it is set as the default as well.
 
 # Cache
 

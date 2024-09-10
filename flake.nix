@@ -29,6 +29,10 @@
         version = "3.4.2";
         hash = "sha256-XSVEk3k7Eq55VtkFUD2biLYUt0bUKRh2PKIpWmdx5Uo=";
       };
+      netplay-beta = {
+        version = "4.0.0-mainline-beta.6";
+        hash = "sha256-CicAZ28+yiagG3bjosu02azV6XzP7+JnLhUJ3hdeQbI=";
+      };
       playback = {
         version = "3.4.3";
         hash = "sha256-QsvayemrIztHSVcFh0I1/SOCoO6EsSTItrRQgqTWvG4=";
@@ -59,6 +63,42 @@
 
     packages = genPkgs (pkgs: {
       default = outputs.packages.${pkgs.system}.slippi-launcher;
+      slippi-netplay-beta = pkgs.callPackage ({
+        stdenvNoCC,
+        appimageTools,
+        fetchzip,
+        makeWrapper,
+        lib,
+        version ? defaults.netplay-beta.version,
+        hash ? defaults.netplay-beta.hash,
+      }: let
+        pname = "Slippi_Netplay_Mainline-x86_64.AppImage";
+        zip = fetchzip {
+          inherit hash;
+          url = "https://github.com/project-slippi/dolphin/releases/download/v${version}/Mainline-Slippi-${version}-Linux.zip";
+          stripRoot = false;
+        };
+        src = "${zip}/Slippi_Netplay_Mainline-x86_64.AppImage";
+      in
+        stdenvNoCC.mkDerivation {
+          inherit pname version;
+          nativeBuildInputs = [
+            makeWrapper
+          ];
+          src = appimageTools.wrapType2 {
+            inherit pname version src;
+            extraPkgs = pkgs: with pkgs; [curl libsForQt5.qt5.qttools];
+          };
+
+          installPhase = ''
+            runHook preInstall
+            mkdir -p "$out/bin"
+            cp -r "$src/bin" "$out"
+            wrapProgram $out/bin/${pname} \
+              --set QT_QPA_PLATFORM xcb
+            runHook postInstall
+          '';
+        }) {};
       slippi-netplay = pkgs.callPackage ({
         stdenvNoCC,
         appimageTools,
@@ -370,6 +410,10 @@
         inherit (lib) mkEnableOption mkOption types mkIf;
         cfg = config.slippi-launcher;
         flakePackages = outputs.packages.${pkgs.system};
+        netplay-beta-package = version: hash:
+          flakePackages.slippi-netplay-beta.overrideAttrs {
+            inherit version hash;
+          };
         netplay-package = version: hash:
           flakePackages.slippi-netplay.overrideAttrs {
             inherit version hash;
@@ -399,6 +443,17 @@
             description = "The hash of the Slippi Netplay AppImage to install.";
           };
 
+          netplayBetaVersion = mkOption {
+            default = defaults.netplay-beta.version;
+            type = types.str;
+            description = "The version of Slippi Netplay (Mainline beta) to install.";
+          };
+          netplayBetaHash = mkOption {
+            default = defaults.netplay-beta.hash;
+            type = types.str;
+            description = "The hash of the Slippi Netplay (Mainline beta) AppImage to install.";
+          };
+
           playbackVersion = mkOption {
             default = defaults.playback.version;
             type = types.str;
@@ -426,6 +481,7 @@
             type = types.str;
             description = "The path to an NTSC Melee ISO.";
           };
+          useNetplayBeta = mkEnableOption "Use the mainline Dolphin instead of the stable version." // {default = false;};
 
           launchMeleeOnPlay = mkEnableOption "Launch Melee in Dolphin when the Play button is pressed." // {default = true;};
 
@@ -453,6 +509,7 @@
         };
         config = let
           cfgNetplayPackage = netplay-package cfg.netplayVersion cfg.netplayHash;
+          cfgNetplayBetaPackage = netplay-beta-package cfg.netplayBetaVersion cfg.netplayBetaHash;
           cfgPlaybackPackage = playback-package cfg.playbackVersion cfg.playbackHash;
           cfgLauncherPackage = launcher-package cfg.launcherVersion cfg.launcherHash;
         in {
@@ -467,6 +524,20 @@
             source = "${pkgs.fetchzip {
               url = "https://github.com/project-slippi/Ishiiruka/releases/download/v${cfg.netplayVersion}/FM-Slippi-${cfg.netplayVersion}-Linux.zip";
               hash = cfg.netplayHash;
+              stripRoot = false;
+            }}/Sys";
+            recursive = false;
+          };
+          home.file.".config/Slippi Launcher/netplay-beta/Slippi_Netplay_Mainline-x86_64.AppImage" = {
+            enable = cfg.useNetplayBeta;
+            source = "${cfgNetplayBetaPackage}/bin/Slippi_Netplay_Mainline-x86_64.AppImage";
+            recursive = false;
+          };
+          home.file.".config/Slippi Launcher/netplay-beta/Sys" = {
+            enable = cfg.useNetplayBeta;
+            source = "${pkgs.fetchzip {
+              url = "https://github.com/project-slippi/dolphin/releases/download/v${cfg.netplayBetaVersion}/Mainline-Slippi-${cfg.netplayBetaVersion}-Linux.zip";
+              hash = cfg.netplayBetaHash;
               stripRoot = false;
             }}/Sys";
             recursive = false;
@@ -498,13 +569,18 @@
 
                   launchMeleeOnPlay = cfg.launchMeleeOnPlay;
                   enableJukebox = cfg.enableJukebox;
+                  useNetplayBeta = cfg.useNetplayBeta;
 
                   rootSlpPath = cfg.rootSlpPath;
                   useMonthlySubfolders = cfg.useMonthlySubfolders;
                   spectateSlpPath = cfg.spectateSlpPath;
                   extraSlpPaths = cfg.extraSlpPaths;
 
-                  netplayDolphinPath = "${cfgNetplayPackage}/bin/";
+                  netplayDolphinPath = "${
+                    if cfg.useNetplayBeta
+                    then cfgNetplayBetaPackage
+                    else cfgNetplayPackage
+                  }/bin/";
                   playbackDolphinPath = "${cfgPlaybackPackage}/bin/";
 
                   autoUpdateLauncher = false;
