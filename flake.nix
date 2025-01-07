@@ -119,12 +119,15 @@
 
           src = appimageTools.wrapType2 {
             inherit pname version src;
+            nativeBuildInputs = [
+              pkgs.wrapGAppsHook4
+            ];
             extraPkgs = pkgs: with pkgs; [curl zlib mpg123];
+            # extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader mesa mesa.drivers wrapGAppsHook];
 
             postInstall = ''
               ls -la "$out"
               wrapProgram $out/bin/${pname}-${version} \
-                --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations}}"
             '';
           };
 
@@ -157,12 +160,15 @@
 
           src = appimageTools.wrapType2 {
             inherit pname version src;
+            nativeBuildInputs = [
+              pkgs.wrapGAppsHook4
+            ];
             extraPkgs = pkgs: with pkgs; [curl zlib mpg123];
+            # extraPkgs = pkgs: with pkgs; [curl zlib mpg123 vulkan-loader mesa mesa.drivers wrapGAppsHook];
 
             postInstall = ''
               ls -la "$out"
               wrapProgram $out/bin/${pname}-${version} \
-                --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations}}"
             '';
           };
 
@@ -199,12 +205,14 @@
 
           src = appimageTools.wrapType2 {
             inherit pname version src;
+            nativeBuildInputs = [
+              pkgs.wrapGAppsHook4
+            ];
             extraPkgs = pkgs: with pkgs; [curl zlib mpg123];
 
             postInstall = ''
               ls -la "$out"
               wrapProgram $out/bin/${pname}-${version} \
-                --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations}}"
             '';
           };
 
