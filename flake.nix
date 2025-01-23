@@ -26,16 +26,16 @@
   }: let
     defaults = {
       netplay = {
-        version = "3.4.2";
-        hash = "sha256-XSVEk3k7Eq55VtkFUD2biLYUt0bUKRh2PKIpWmdx5Uo=";
+        version = "3.4.3";
+        hash = "sha256-sQ8JkmhKxr34kVHHGCAoQf0IwO36CgQPi4MSrnvb384=";
       };
       netplay-beta = {
         version = "4.0.0-mainline-beta.6";
         hash = "sha256-CicAZ28+yiagG3bjosu02azV6XzP7+JnLhUJ3hdeQbI=";
       };
       playback = {
-        version = "3.4.3";
-        hash = "sha256-QsvayemrIztHSVcFh0I1/SOCoO6EsSTItrRQgqTWvG4=";
+        version = "3.4.4";
+        hash = "sha256-iFBOwF0QNLFV88NEI998SmWhyse4gw5IfQf5hua8J64=";
       };
       launcher = {
         version = "2.11.7";
