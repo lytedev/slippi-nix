@@ -27,14 +27,14 @@
     defaults = {
       netplay = {
         version = "3.4.4";
-        hash = "sha256-sQ8JkmhKxr34kVHHGCAoQf0IwO36CgQPi4MSrnvb386=";
+        hash = "sha256-L+8DvEsaSGzJBg1gN3K4ntzvfnXFMssgKqPU40iOSTs=";
       };
       netplay-beta = {
         version = "4.0.0-mainline-beta.7";
         hash = "sha256-Et6OKSU/+9YZ49rIr0evXNlPfGolg1PSxmuuAZnV4jc=";
       };
       playback = {
-        version = "3.4.5";
+        version = "3.4.4";
         hash = "sha256-iFBOwF0QNLFV88NEI998SmWhyse4gw5IfQf5hua8J66=";
       };
       launcher = {
