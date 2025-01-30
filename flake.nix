@@ -26,16 +26,16 @@
   }: let
     defaults = {
       netplay = {
-        version = "3.4.3";
-        hash = "sha256-sQ8JkmhKxr34kVHHGCAoQf0IwO36CgQPi4MSrnvb384=";
+        version = "3.4.4";
+        hash = "sha256-L+8DvEsaSGzJBg1gN3K4ntzvfnXFMssgKqPU40iOSTs=";
       };
       netplay-beta = {
-        version = "4.0.0-mainline-beta.7";
-        hash = "sha256-Et6OKSU/+9YZ49rIr0evXNlPfGolg1PSxmuuAZnV4jc=";
+        version = "4.0.0-mainline-beta.8";
+        hash = "sha256-f9jx1ZzUr6oxCvPS1RG115EX13ocTeoEAdrke7YnWu0=";
       };
       playback = {
-        version = "3.4.4";
-        hash = "sha256-iFBOwF0QNLFV88NEI998SmWhyse4gw5IfQf5hua8J64=";
+        version = "3.4.5";
+        hash = "sha256-iCBdlcBPSRT8m772sqI+gSfNmVNAug0SfkSwVUE6+fE=";
       };
       launcher = {
         version = "2.11.7";
@@ -45,9 +45,9 @@
 
     inherit (self) outputs;
     forSystems = nixpkgs.lib.genAttrs [
-      # "aarch64-linux"
       # "aarch64-darwin"
       # "x86_64-darwin"
+      # "aarch64-linux"
       "x86_64-linux"
     ];
     pkgsFor = system: (import nixpkgs {inherit system;});
@@ -233,7 +233,7 @@
     formatter = genPkgs (p: p.alejandra);
 
     checks = genPkgs (pkgs: {
-      inherit (outputs.packages.${pkgs.system}) slippi-launcher slippi-netplay slippi-playback;
+      inherit (outputs.packages.${pkgs.system}) slippi-launcher slippi-netplay slippi-playback slippi-netplay-beta;
       git-hooks = git-hooks.lib.${pkgs.system}.run {
         src = ./.;
         hooks = {
