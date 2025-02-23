@@ -130,7 +130,7 @@
 
           installPhase = ''
             runHook preInstall
-
+            echo "FUCK"
             mkdir -p "$out/bin"
             cp -r "$src/bin" "$out"
 
