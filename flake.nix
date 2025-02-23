@@ -117,7 +117,7 @@
         stdenvNoCC.mkDerivation {
           inherit pname version;
 
-          src = appimageTools.wrapType2 {
+          src = builtins.trace "src=${src} zip=${zip}" appimageTools.wrapType2 {
             inherit pname version src;
             extraPkgs = pkgs: with pkgs; [curl zlib mpg123];
 
