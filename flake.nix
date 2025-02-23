@@ -106,18 +106,19 @@
         version ? defaults.netplay.version,
         hash ? defaults.netplay.hash,
       }: let
-        pname = "Slippi_Online-x86_64.AppImage";
+        pname1 = "Slippi_Online-x86_64.AppImage";
         zip = fetchzip {
           inherit hash;
           url = "https://github.com/project-slippi/Ishiiruka/releases/download/v${version}/FM-Slippi-${version}-Linux.zip";
           stripRoot = false;
         };
         src = "${zip}/Slippi_Online-x86_64.AppImage";
+        pname = builtins.trace "src=${src} zip=${zip}" pname1;
       in
         stdenvNoCC.mkDerivation {
           inherit pname version;
 
-          src = builtins.trace "src=${src} zip=${zip}" appimageTools.wrapType2 {
+          src = appimageTools.wrapType2 {
             inherit pname version src;
             extraPkgs = pkgs: with pkgs; [curl zlib mpg123];
 
