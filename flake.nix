@@ -122,6 +122,8 @@
             extraPkgs = pkgs: with pkgs; [curl zlib mpg123];
 
             postInstall = ''
+              set -x
+              echo FUCK
               ls -la "$out"
               wrapProgram $out/bin/${pname}-${version} \
                 --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations}}"
@@ -130,7 +132,6 @@
 
           installPhase = ''
             runHook preInstall
-            echo "FUCK"
             mkdir -p "$out/bin"
             cp -r "$src/bin" "$out"
 
