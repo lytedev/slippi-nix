@@ -26,8 +26,8 @@
   }: let
     defaults = {
       netplay = {
-        version = "3.4.4";
-        hash = "sha256-L+8DvEsaSGzJBg1gN3K4ntzvfnXFMssgKqPU40iOSTs=";
+        version = "3.4.5";
+        hash = "sha256-XspvaRlLNAeJ2KyagS4PWOqaJHVZqvw/a3Z3mAxOFJI=";
       };
       netplay-beta = {
         version = "4.0.0-mainline-beta.8";
@@ -38,8 +38,8 @@
         hash = "sha256-iCBdlcBPSRT8m772sqI+gSfNmVNAug0SfkSwVUE6+fE=";
       };
       launcher = {
-        version = "2.11.7";
-        hash = "sha256-wlPAbXzUdmu0zQE6H1FfUc4bk3yBptauC+86mwWFrRg=";
+        version = "2.11.8";
+        hash = "sha256-8krtzo878nh6oMTUhyPJIa/RkkebqQckb4Mh2+9SaiU=";
       };
     };
 
