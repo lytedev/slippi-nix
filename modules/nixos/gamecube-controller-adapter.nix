@@ -2,18 +2,33 @@
   lib,
   config,
   ...
-}: let
-  inherit (lib) mkEnableOption mkOption types mkIf;
+}:
+let
+  inherit (lib)
+    mkEnableOption
+    mkOption
+    types
+    mkIf
+    ;
   cfg = config.gamecube-controller-adapter;
-in {
+in
+{
   # defaults here are true since we assume if you're importing the module, you
   # want it on ;)
   options.gamecube-controller-adapter = {
-    enable = mkEnableOption "Enable the optimal gamecube controller adapter experience." // {default = true;};
+    enable = mkEnableOption "Enable the optimal gamecube controller adapter experience." // {
+      default = true;
+    };
 
-    overclocking-kernel-module.enable = mkEnableOption "Turn on gamecube controller adapter overclocking kernel module." // {default = true;};
+    overclocking-kernel-module.enable =
+      mkEnableOption "Turn on gamecube controller adapter overclocking kernel module."
+      // {
+        default = true;
+      };
 
-    udev-rules.enable = mkEnableOption "Turn on udev rules for your gamecube controller adapter." // {default = true;};
+    udev-rules.enable = mkEnableOption "Turn on udev rules for your gamecube controller adapter." // {
+      default = true;
+    };
     udev-rules.rules = mkOption {
       default = ''
         ATTRS{idVendor}=="057e", ATTRS{idProduct}=="0337", MODE="666", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device" TAG+="uaccess"
