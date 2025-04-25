@@ -25,6 +25,7 @@ appimageTools.wrapType2 (
         zlib
         mpg123
       ];
+    meta.mainProgram = pname;
   }
   // lib.optionalAttrs (rawZip != null) {
     passthru.raw-zip = rawZip;
