@@ -1,18 +1,18 @@
 {
   netplay = {
-    version = "3.4.5";
-    hash = "sha256-XspvaRlLNAeJ2KyagS4PWOqaJHVZqvw/a3Z3mAxOFJI=";
+    version = "3.4.6";
+    hash = "sha256-yjHoLOQpEXgjWMHxDiHYUmOP3e1zt3j13Gywx/PRe3w=";
   };
   netplay-beta = {
-    version = "4.0.0-mainline-beta.9";
-    hash = "sha256-gG7/E4fkAo7P/i2or5J8sQrriqSQducOytN+oP0+BfA=";
+    version = "4.0.0-mainline-beta.10";
+    hash = "sha256-b7G/fbws08vWVTYN4MJ6g3iW+2bH/yAZ+xcwB+Jw8Fc=";
   };
   playback = {
-    version = "3.4.5";
-    hash = "sha256-iCBdlcBPSRT8m772sqI+gSfNmVNAug0SfkSwVUE6+fE=";
+    version = "3.4.6";
+    hash = "sha256-bHbsdUs1pm7f/NSUn6f4s3LEL1Wbobq0h0TcQ0dCvbw=";
   };
   launcher = {
-    version = "2.11.9";
-    hash = "sha256-ocKM8m1OCJTaWUJC9Gat5V2mIyzamNxkFt+3LW6FZ3k=";
+    version = "2.11.10";
+    hash = "sha256-OrWd0jVqe6CzNbVRNlm2alt2NZ8uBYeHiASaB74ouW4=";
   };
 }
