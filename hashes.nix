@@ -4,8 +4,8 @@
     hash = "sha256-/HngrIzlSTb4oTEr3z2vMHt0iXsIgELlk2BoSiW4Npk=";
   };
   netplay-beta = {
-    version = "4.0.0-mainline-beta.11";
-    hash = "sha256-r24UrhAmrLWlWmkHul2gkiX/p69R02Cuoxed20PcX1w=";
+    version = "4.0.0-mainline-beta.13";
+    hash = "sha256-bZwnivEWF1/Y3ywoPaQZYPNVC280DLB1L1mEuP4hA7k=";
   };
   playback = {
     version = "3.5.1";
