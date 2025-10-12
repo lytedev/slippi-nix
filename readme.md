@@ -106,7 +106,7 @@ You can enable the beta netplay client by adding this to the configuration:
 ```nix
 {
   home-manager.users.YOUR_USERNAME = {
-    slippi-launcher.useBetaNetplay = true;
+    slippi-launcher.useNetplayBeta = true;
   };
 }
 ```
