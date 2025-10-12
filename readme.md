@@ -32,8 +32,9 @@ will also need to specify where your Melee ISO is. Here is an example:
 
 ```nix
 {
-  inputs.slippi.url = "github:lytedev/slippi-nix";
   inputs.nixpkgs.url = "...";
+  inputs.slippi.url = "github:lytedev/slippi-nix";
+  inputs.slippi.inputs.nixpkgs.follows = "nixpkgs";
 
   outputs = {slippi, nixpkgs, ...}: {
     nixosConfigurations = nixpkgs.lib.nixosSystem {
