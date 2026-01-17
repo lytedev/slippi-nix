@@ -15,10 +15,13 @@ in
   pname ? defaults.pname,
 }:
 let
+  _logHash = (builtins.trace "Slippi Netplay Hash: ${hash}" hash);
+  _logVersion = (builtins.trace "Slippi Netplay Version: ${version}" version);
+  _logUrl = "https://github.com/project-slippi/Ishiiruka/releases/download/v${_logVersion}/FM-Slippi-${_logVersion}-Linux.zip";
   # dynamic package defaults
   rawZip = fetchzip {
-    inherit hash;
-    url = "https://github.com/project-slippi/Ishiiruka/releases/download/v${version}/FM-Slippi-${version}-Linux.zip";
+    hash = _logHash;
+    url = builtins.trace "Slippi Netplay Zip URL: ${_logUrl}" _logUrl;
     stripRoot = false;
   };
   src = "${rawZip}/Slippi_Online-x86_64.AppImage";

@@ -11,8 +11,8 @@
 }:
 appimageTools.wrapType2 (
   {
+    version = builtins.trace "${pname} version: ${version}" version;
     inherit
-      version
       pname
       src
       appImageContents
