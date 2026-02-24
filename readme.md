@@ -113,6 +113,19 @@ You can enable the beta netplay client by adding this to the configuration:
 ```
 The beta netplay client is *not* downloaded unless it is enabled. When enabled it is set as the default as well.
 
+# Settings and Login
+
+The Home Manager module creates a mutable settings file at
+`~/.config/Slippi Launcher/Settings`. Nix-managed settings (ISO path,
+Dolphin paths, etc.) are merged into this file on each Home Manager
+activation, but the launcher is free to write to it as well — so login
+credentials and any other launcher-managed settings are preserved across
+rebuilds.
+
+If you are upgrading from an older version of this module that used a
+read-only symlink, the stale symlink will be cleaned up automatically on
+the next activation.
+
 # Cache
 
 You may also want to leverage our Cachix binary cache. There isn't _much_
