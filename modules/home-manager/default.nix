@@ -156,12 +156,14 @@ in
         source = "${cfgPlaybackPackage.raw-zip}/Sys";
         recursive = false;
       };
-      xdg.configFile."Slippi Launcher/Settings" = {
-        source =
-          let
-            jsonFormat = pkgs.formats.json { };
-          in
-          jsonFormat.generate "slippi-config" {
+      # Use an activation script instead of xdg.configFile so the settings
+      # file is mutable. The launcher needs to write to it (e.g. login
+      # credentials). Nix-managed settings are merged on each activation,
+      # preserving any extra keys the launcher has written.
+      home.activation.slippiLauncherSettings =
+        let
+          jsonFormat = pkgs.formats.json { };
+          settingsFile = jsonFormat.generate "slippi-config" {
             settings = {
               isoPath = cfg.isoPath;
 
@@ -182,7 +184,29 @@ in
               autoUpdateLauncher = false;
             };
           };
-      };
+        in
+        lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          slippi_dir="${config.xdg.configHome}/Slippi Launcher"
+          slippi_settings="$slippi_dir/Settings"
+
+          mkdir -p "$slippi_dir"
+
+          # Remove stale symlink from previous module version
+          if [ -L "$slippi_settings" ]; then
+            rm "$slippi_settings"
+          fi
+
+          if [ -f "$slippi_settings" ]; then
+            # Merge existing settings with Nix-managed settings (Nix wins on conflicts)
+            ${pkgs.jq}/bin/jq -s '.[0] * .[1]' \
+              "$slippi_settings" \
+              "${settingsFile}" > "$slippi_settings.tmp"
+            mv "$slippi_settings.tmp" "$slippi_settings"
+          else
+            cp "${settingsFile}" "$slippi_settings"
+            chmod u+w "$slippi_settings"
+          fi
+        '';
     }
   );
 }
