@@ -15,20 +15,53 @@ to manage your Slippi installation in that case.
 
 # Usage
 
-The simplest usage is to simply run the netplay package in this Flake:
+The simplest usage is to run the launcher directly:
 
 ```shell
-nix run github:lytedev/slippi-nix#slippi-netplay
+nix run github:lytedev/slippi-nix
 ```
 
-However, for the optimal experience, you will want to ensure the host has the
-necessary configuration to handle a GameCube controller adapter. Additionally,
-you likely want to make use of the Slippi Launcher for managing and viewing
-your replays.
+To avoid potential graphics driver mismatches between the flake's pinned nixpkgs
+and your system, override the nixpkgs input to use your own:
 
-In your flake, you may optionally import the NixOS module for the overclocked
-adapter and you must import the Home Manager module for the Slippi Launcher. You
-will also need to specify where your Melee ISO is. Here is an example:
+```shell
+nix run github:lytedev/slippi-nix --override-input nixpkgs nixpkgs
+```
+
+This uses the `slippi-launcher-desktop` package, which is a standalone wrapper
+that automatically configures Dolphin paths and sets up AppImage symlinks on
+each launch. No Home Manager module is required — you can configure your ISO
+path and other settings through the launcher UI. Login and other
+launcher-managed settings are preserved across rebuilds.
+
+You can also add it to your system packages without Home Manager:
+
+```nix
+{
+  inputs.slippi.url = "github:lytedev/slippi-nix";
+  inputs.slippi.inputs.nixpkgs.follows = "nixpkgs";
+
+  outputs = {slippi, nixpkgs, ...}: {
+    nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
+      modules = [
+        slippi.nixosModules.default # optional: GameCube adapter support
+        {
+          environment.systemPackages = [
+            slippi.packages.x86_64-linux.default
+          ];
+        }
+      ];
+    };
+  };
+}
+```
+
+## Home Manager Module
+
+For more declarative control over settings, you can use the Home Manager module
+instead. This lets you configure the ISO path, replay directories, and other
+options via Nix. You will need to specify where your Melee ISO is. Here is an
+example:
 
 ```nix
 {
@@ -127,17 +160,15 @@ nixConfig = {
 };
 ```
 
-# To Do
+# Packages
 
-It would be nice if Home Manager weren't strictly necessary. At the moment,
-I believe the config file _could_ be created via a NixOS module (using
-`systemd.tmpfiles.rules` or something?), but the ideal scenario would be to
-instead either be to specify to the launcher where the netplay and playback
-binaries are without the configuration file -- perhaps via command line
-arguments or environment variables.
-
-If this were true, you could simply `nix run github:lytedev/slippi-nix#netplay`
-and start playing right away, which is ideal!
+| Package | Description |
+|---------|-------------|
+| `slippi-launcher-desktop` (default) | Standalone launcher with automatic Dolphin/AppImage setup |
+| `slippi-launcher` | Base launcher AppImage (no config management, used by the HM module) |
+| `slippi-netplay` | Stable netplay Dolphin |
+| `slippi-netplay-beta` | Mainline (beta) netplay Dolphin |
+| `slippi-playback` | Playback Dolphin |
 
 # License
 
