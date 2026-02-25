@@ -13,4 +13,4 @@ jobs:
       with:
         name: slippi-nix
         authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-    - run: nix build .#slippi-launcher .#slippi-netplay .#slippi-playback --accept-flake-config
+    - run: nix build .#slippi-launcher .#slippi-launcher-desktop .#slippi-netplay .#slippi-netplay-beta .#slippi-playback --accept-flake-config

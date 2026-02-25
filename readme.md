@@ -2,10 +2,11 @@
 
 [![build status](https://github.com/lytedev/slippi-nix/actions/workflows/build-and-cache.yaml/badge.svg)](https://github.com/lytedev/slippi-nix/actions/workflows/build-and-cache.yaml)
 
-This project is a Flake which exposes NixOS modules for ensuring your GameCube
-controller adapter is performing as well is it can be and Home Manager modules
-for installing and configuring the Slippi Launcher using NixOS-compatible
-versions of both the playback and netplay builds of Dolphin (Ishiiruka).
+This project is a Flake for installing and running the Slippi Launcher on NixOS
+using Nix-compatible versions of the playback and netplay builds of Dolphin
+(Ishiiruka). It also provides an optional NixOS module for optimizing your
+GameCube controller adapter and an optional Home Manager module for declarative
+configuration.
 
 **NOTE**: At this time, this Flake only supports the `x86_64-linux` `system`
 (since it consumes AppImages that support the same). If you are using Linux on
@@ -34,7 +35,7 @@ each launch. No Home Manager module is required — you can configure your ISO
 path and other settings through the launcher UI. Login and other
 launcher-managed settings are preserved across rebuilds.
 
-You can also add it to your system packages without Home Manager:
+To add it permanently to your system:
 
 ```nix
 {
@@ -44,7 +45,7 @@ You can also add it to your system packages without Home Manager:
   outputs = {slippi, nixpkgs, ...}: {
     nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
       modules = [
-        slippi.nixosModules.default # optional: GameCube adapter support
+        slippi.nixosModules.default # optional: GameCube adapter optimization
         {
           environment.systemPackages = [
             slippi.packages.x86_64-linux.default
@@ -56,12 +57,12 @@ You can also add it to your system packages without Home Manager:
 }
 ```
 
-## Home Manager Module
+# Home Manager Module
 
-For more declarative control over settings, you can use the Home Manager module
-instead. This lets you configure the ISO path, replay directories, and other
-options via Nix. You will need to specify where your Melee ISO is. Here is an
-example:
+For declarative control over settings (ISO path, replay directories, etc.), you
+can optionally use the Home Manager module. Nix-managed settings are merged into
+the settings file on each activation while preserving any launcher-managed
+settings (login credentials, etc.).
 
 ```nix
 {
@@ -103,6 +104,25 @@ slippi-launcher.launchMeleeOnPlay = false;
 
 As I prefer to be able to tweak Dolphin's settings before diving right in.
 
+If you are upgrading from an older version of the Home Manager module that used
+a read-only symlink for the settings file, the stale symlink will be cleaned up
+automatically on the next activation.
+
+# Beta
+
+You can enable the beta netplay client by adding this to the Home Manager
+configuration:
+
+```nix
+{
+  home-manager.users.YOUR_USERNAME = {
+    slippi-launcher.useNetplayBeta = true;
+  };
+}
+```
+
+The beta netplay client is *not* downloaded unless it is enabled. When enabled it is set as the default as well.
+
 # Updates
 
 Note that this does _not_ support the auto-updates performed by Slippi Launcher.
@@ -115,9 +135,9 @@ sudo nixos-rebuild switch --flake .
 ```
 
 In the event that this repo is out-of-date and an update was newly pushed out
-and you do not want to wait, or you prefer to be in control, this Flake exposes
-extra configuration fields for specifying the version of the AppImage you want
-along with the hash like so:
+and you do not want to wait, or you prefer to be in control, the Home Manager
+module exposes extra configuration fields for specifying the version of the
+AppImage you want along with the hash like so:
 
 ```nix
 {
@@ -134,30 +154,6 @@ along with the hash like so:
 
 So when a Slippi update is released, you can usually bump the version to match
 and update the hash with whatever `nix` says it is.
-
-# Beta
-You can enable the beta netplay client by adding this to the configuration:
-```nix
-{
-  home-manager.users.YOUR_USERNAME = {
-    slippi-launcher.useNetplayBeta = true;
-  };
-}
-```
-The beta netplay client is *not* downloaded unless it is enabled. When enabled it is set as the default as well.
-
-# Settings and Login
-
-The Home Manager module creates a mutable settings file at
-`~/.config/Slippi Launcher/Settings`. Nix-managed settings (ISO path,
-Dolphin paths, etc.) are merged into this file on each Home Manager
-activation, but the launcher is free to write to it as well — so login
-credentials and any other launcher-managed settings are preserved across
-rebuilds.
-
-If you are upgrading from an older version of this module that used a
-read-only symlink, the stale symlink will be cleaned up automatically on
-the next activation.
 
 # Cache
 
