@@ -65,7 +65,7 @@
 
       nixosModules = {
         default = self.nixosModules.gamecube-controller-adapter;
-        gamecube-controller-adapter = ./modules/nixos/gamecube-controller-adapter.nix;
+        gamecube-controller-adapter = import ./modules/nixos/gamecube-controller-adapter.nix;
       };
 
       homeManagerModules = {
