@@ -156,6 +156,23 @@ in
         source = "${cfgPlaybackPackage.raw-zip}/Sys";
         recursive = false;
       };
+
+      xdg = {
+        mimeApps.defaultApplications = {
+          "application/x-slippi" = "slippi-launcher.desktop";
+        };
+        dataFile."mime/packages/x-slippi.xml".text = ''
+          <?xml version="1.0" encoding="UTF-8"?>
+          <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+            <mime-type type="application/x-slippi">
+              <comment>Slippi Replay</comment>
+              <glob pattern="*.slp"/>
+              <icon name="slippi-launcher"/>
+            </mime-type>
+          </mime-info>
+        '';
+      };
+
       # Use an activation script instead of xdg.configFile so the settings
       # file is mutable. The launcher needs to write to it (e.g. login
       # credentials). Nix-managed settings are merged on each activation,
