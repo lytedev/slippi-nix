@@ -193,11 +193,9 @@ in
               spectateSlpPath = cfg.spectateSlpPath;
               extraSlpPaths = cfg.extraSlpPaths;
 
-              netplayDolphinPath = "${
-                if cfg.useNetplayBeta then cfgNetplayBetaPackage else cfgNetplayPackage
-              }/bin/";
-              playbackDolphinPath = "${cfgPlaybackPackage}/bin/";
-
+              # The launcher ignores netplayDolphinPath/playbackDolphinPath; it
+              # always looks for AppImages under ~/.config/Slippi Launcher/{netplay,playback}/.
+              # The home.file symlinks above are what actually prevent downloads.
               autoUpdateLauncher = false;
             };
           };

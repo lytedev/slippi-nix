@@ -142,18 +142,21 @@
                   """
                   return f"sudo -u daniel -i -- bash -c \"{cmd}\""
 
-              with subtest("ensure slippi launcher settings file references correct versions"):
+              with subtest("ensure slippi launcher settings file exists"):
                   machine.wait_for_unit("default.target")
-                  machine.succeed("grep ${hashes.netplay.version} '/home/daniel/.config/Slippi Launcher/Settings'")
-                  machine.succeed("grep ${hashes.playback.version} '/home/daniel/.config/Slippi Launcher/Settings'")
+                  machine.succeed("test -f '/home/daniel/.config/Slippi Launcher/Settings'")
+                  machine.succeed("jq -e '.settings.autoUpdateLauncher == false' '/home/daniel/.config/Slippi Launcher/Settings'")
 
-              with subtest("ensure netplay appimage version is correct"):
+              with subtest("ensure dolphin appimages report correct versions"):
                   machine.wait_for_unit("default.target")
                   machine.wait_for_x()
                   machine.wait_for_file("/home/daniel/.Xauthority")
                   machine.succeed("xauth merge /home/daniel/.Xauthority")
                   machine.succeed(as_user("""
-                  "''$(jq -r '.settings.netplayDolphinPath' '/home/daniel/.config/Slippi Launcher/Settings')/Slippi_Online-x86_64.AppImage" --version | grep ${hashes.netplay.version}
+                  '/home/daniel/.config/Slippi Launcher/netplay/Slippi_Online-x86_64.AppImage' --version 2>&1 | grep ${hashes.netplay.version}
+                  """))
+                  machine.succeed(as_user("""
+                  '/home/daniel/.config/Slippi Launcher/playback/Slippi_Playback-x86_64.AppImage' --version 2>&1 | grep ${hashes.playback.version}
                   """))
             '';
         };

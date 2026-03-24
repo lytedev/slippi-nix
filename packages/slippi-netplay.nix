@@ -38,7 +38,6 @@ in
     ;
   extraInstallCommands = ''
     wrapProgram "$out/bin/${pname}" \
-      --inherit-argv0 \
-      --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations}}"
+      --inherit-argv0
   '';
 }
