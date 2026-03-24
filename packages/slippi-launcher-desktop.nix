@@ -12,10 +12,11 @@
   formats,
 }:
 let
+  # The launcher ignores netplayDolphinPath/playbackDolphinPath; it always
+  # looks for AppImages under ~/.config/Slippi Launcher/{netplay,playback}/.
+  # The symlinks below are what actually prevent downloads.
   managedSettings = (formats.json { }).generate "slippi-managed-settings" {
     settings = {
-      netplayDolphinPath = "${slippi-netplay}/bin/";
-      playbackDolphinPath = "${slippi-playback}/bin/";
       autoUpdateLauncher = false;
     };
   };
