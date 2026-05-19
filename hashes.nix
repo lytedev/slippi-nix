@@ -1,7 +1,7 @@
 {
   netplay = {
-    version = "3.6.0";
-    hash = "sha256-56gR2JmIT9YfDaeGp09wj3wmJUloC6FG10SgANOyhgs=";
+    version = "3.6.1";
+    hash = "sha256-lBzV7j8yzcahRB58a/5PHfPcoo3lXJps3bF9nhdoNTQ=";
   };
   netplay-beta = {
     version = "4.0.0-mainline-beta.14";
