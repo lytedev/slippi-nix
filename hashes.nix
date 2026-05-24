@@ -12,7 +12,7 @@
     hash = "sha256-LWo5gIXQck4dq9uKOYWElPsIUw2/GcMboteQsAx549k=";
   };
   launcher = {
-    version = "2.13.3";
-    hash = "sha256-5tFl0ezk/yMkfd59kUKxGZBvt5MqnoCvxRSepy7O8BQ=";
+    version = "2.14.2";
+    hash = "sha256-bF2QY4xGDBv/6w482x1LGr7uvbu665XOWPndv+U7W74=";
   };
 }
