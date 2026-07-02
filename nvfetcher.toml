@@ -1,0 +1,40 @@
+# Source-of-truth for the upstream Slippi release artifacts this flake packages.
+#
+# `nvfetcher` reads this file, discovers the latest release of each upstream
+# repo, prefetches the matching Linux asset, and writes the pinned version+hash
+# into `_sources/generated.nix` (committed). A scheduled GitHub Actions workflow
+# runs it and opens a PR whenever anything changes. To update by hand:
+#
+#     nix run nixpkgs#nvfetcher
+#
+# The `use_latest_release` version source returns the git tag (e.g. `v3.6.4`),
+# so `from_pattern`/`to_pattern` strip the leading `v` to yield a bare version
+# (`3.6.4`) matching what the AppImages report via `--version`. The fetch URLs
+# then re-add the `v` for the tag path segment.
+
+[netplay]
+src.github = "project-slippi/Ishiiruka"
+src.from_pattern = "v(.*)"
+src.to_pattern = "\\1"
+fetch.url = "https://github.com/project-slippi/Ishiiruka/releases/download/v$ver/FM-Slippi-$ver-Linux.zip"
+
+[playback]
+src.github = "project-slippi/Ishiiruka-Playback"
+src.from_pattern = "v(.*)"
+src.to_pattern = "\\1"
+fetch.url = "https://github.com/project-slippi/Ishiiruka-Playback/releases/download/v$ver/playback-$ver-Linux.zip"
+
+[launcher]
+src.github = "project-slippi/slippi-launcher"
+src.from_pattern = "v(.*)"
+src.to_pattern = "\\1"
+fetch.url = "https://github.com/project-slippi/slippi-launcher/releases/download/v$ver/Slippi-Launcher-$ver-x86_64.AppImage"
+
+# The mainline Dolphin repo only ships these `-mainline-beta` releases, some of
+# which are flagged as prereleases, so opt into tracking prereleases.
+[netplay-beta]
+src.github = "project-slippi/dolphin"
+src.prerelease = true
+src.from_pattern = "v(.*)"
+src.to_pattern = "\\1"
+fetch.url = "https://github.com/project-slippi/dolphin/releases/download/v$ver/Mainline-Slippi-$ver-Linux.zip"

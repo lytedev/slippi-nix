@@ -134,26 +134,39 @@ nix flake lock --update-input slippi-nix # use whatever name you gave this flake
 sudo nixos-rebuild switch --flake .
 ```
 
+The pinned upstream versions live in [`nvfetcher.toml`](./nvfetcher.toml) and the
+generated [`_sources/generated.nix`](./_sources/generated.nix). A scheduled
+GitHub Actions workflow ([`update-sources.yaml`](./.github/workflows/update-sources.yaml))
+runs [`nvfetcher`](https://github.com/berberman/nvfetcher) daily and opens a PR
+whenever an upstream release changes, so this repo usually keeps itself current.
+To regenerate the pins by hand:
+
+```shell_session
+nix run nixpkgs#nvfetcher
+```
+
 In the event that this repo is out-of-date and an update was newly pushed out
 and you do not want to wait, or you prefer to be in control, the Home Manager
-module exposes extra configuration fields for specifying the version of the
-AppImage you want along with the hash like so:
+module lets you override any component with your own package. Point it at your
+own build (e.g. via `pkgs.callPackage ./packages/slippi-netplay.nix`) or override
+the pinned one's source:
 
 ```nix
 {
   home-manager.users.YOUR_USERNAME = {
-    slippi-launcher.netplayVersion = "3.4.0";
-    slippi-launcher.netplayHash = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
-    slippi-launcher.netplayBetaVersion = "4.0.0-mainline-beta.6";
-    slippi-launcher.netplayBetaHash = "sha256-CicAZ28+yiagG3bjosu02azV6XzP7+JnLhUJ3hdeQbI=";
-    slippi-launcher.playbackVersion = "3.4.0";
-    slippi-launcher.playbackHash = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
+    slippi-launcher.netplayPackage = pkgs.callPackage "${slippi-nix}/packages/slippi-netplay.nix" {
+      source = {
+        version = "3.4.0";
+        src = pkgs.fetchurl {
+          url = "https://github.com/project-slippi/Ishiiruka/releases/download/v3.4.0/FM-Slippi-3.4.0-Linux.zip";
+          hash = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
+        };
+      };
+    };
+    # netplayBetaPackage, playbackPackage, and launcherPackage work the same way.
   };
 }
 ```
-
-So when a Slippi update is released, you can usually bump the version to match
-and update the hash with whatever `nix` says it is.
 
 # Cache
 
