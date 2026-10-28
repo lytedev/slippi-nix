@@ -44,7 +44,11 @@
         default = self.overlays.slippi;
 
         slippi = final: prev: {
-          inherit (self.packages.${final.system}.slippi) slippi-netplay slippi-playback slippi-launcher;
+          inherit (self.packages.${final.stdenv.hostPlatform.system}.slippi)
+            slippi-netplay
+            slippi-playback
+            slippi-launcher
+            ;
         };
       };
 
@@ -54,7 +58,7 @@
           sources = sourcesFor pkgs;
         in
         {
-          default = self.packages.${pkgs.system}.slippi-launcher-desktop;
+          default = self.packages.${pkgs.stdenv.hostPlatform.system}.slippi-launcher-desktop;
           slippi-netplay-beta = pkgs.callPackage ./packages/slippi-netplay-beta.nix {
             source = sources.netplay-beta;
           };
@@ -69,7 +73,7 @@
           };
           slippi-launcher-desktop = pkgs.callPackage ./packages/slippi-launcher-desktop.nix {
             inherit (pkgs) formats;
-            inherit (self.packages.${pkgs.system})
+            inherit (self.packages.${pkgs.stdenv.hostPlatform.system})
               slippi-launcher
               slippi-netplay
               slippi-netplay-beta
@@ -92,14 +96,14 @@
       };
 
       checks = genPkgs (pkgs: {
-        inherit (self.packages.${pkgs.system})
+        inherit (self.packages.${pkgs.stdenv.hostPlatform.system})
           slippi-launcher
           slippi-launcher-desktop
           slippi-netplay
           slippi-playback
           slippi-netplay-beta
           ;
-        git-hooks = git-hooks.lib.${pkgs.system}.run {
+        git-hooks = git-hooks.lib.${pkgs.stdenv.hostPlatform.system}.run {
           src = ./.;
           hooks = {
             nixfmt-rfc-style.enable = true;
@@ -112,10 +116,7 @@
           # versions
           name = "home-manager-module-test";
           nodes.machine =
-            {
-              pkgs,
-              ...
-            }:
+            { pkgs, ... }:
             with pkgs.lib;
             {
               imports = [
