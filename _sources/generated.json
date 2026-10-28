@@ -1,6 +1,6 @@
 {
     "launcher": {
-        "cargoLock": null,
+        "cargoLocks": null,
         "date": null,
         "extract": null,
         "name": "launcher",
@@ -8,14 +8,14 @@
         "pinned": false,
         "src": {
             "name": null,
-            "sha256": "sha256-FZyZx/bvtbVR/UJyVcWODP12/6XI5Omp8H5w/61LLds=",
+            "sha256": "sha256-Gq4JuCrKfdUd0Qmc6QslIDncEFCfFwjt1VAekXiZHJY=",
             "type": "url",
-            "url": "https://github.com/project-slippi/slippi-launcher/releases/download/v2.15.0/Slippi-Launcher-2.15.0-x86_64.AppImage"
+            "url": "https://github.com/project-slippi/slippi-launcher/releases/download/v2.15.2/Slippi-Launcher-2.15.2-x86_64.AppImage"
         },
-        "version": "2.15.0"
+        "version": "2.15.2"
     },
     "netplay": {
-        "cargoLock": null,
+        "cargoLocks": null,
         "date": null,
         "extract": null,
         "name": "netplay",
@@ -30,7 +30,7 @@
         "version": "3.6.4"
     },
     "netplay-beta": {
-        "cargoLock": null,
+        "cargoLocks": null,
         "date": null,
         "extract": null,
         "name": "netplay-beta",
@@ -45,7 +45,7 @@
         "version": "4.0.0-mainline-beta.19"
     },
     "playback": {
-        "cargoLock": null,
+        "cargoLocks": null,
         "date": null,
         "extract": null,
         "name": "playback",

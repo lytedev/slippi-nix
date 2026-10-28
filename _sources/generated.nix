@@ -8,10 +8,10 @@
 {
   launcher = {
     pname = "launcher";
-    version = "2.15.0";
+    version = "2.15.2";
     src = fetchurl {
-      url = "https://github.com/project-slippi/slippi-launcher/releases/download/v2.15.0/Slippi-Launcher-2.15.0-x86_64.AppImage";
-      sha256 = "sha256-FZyZx/bvtbVR/UJyVcWODP12/6XI5Omp8H5w/61LLds=";
+      url = "https://github.com/project-slippi/slippi-launcher/releases/download/v2.15.2/Slippi-Launcher-2.15.2-x86_64.AppImage";
+      sha256 = "sha256-Gq4JuCrKfdUd0Qmc6QslIDncEFCfFwjt1VAekXiZHJY=";
     };
   };
   netplay = {
