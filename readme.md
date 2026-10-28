@@ -151,7 +151,8 @@ still need to update their lock files.
 ## Maintainer setup
 
 1. Install a GitHub App on this repository with Contents and Pull requests
-   read/write permissions. Store its ID as `SLIPPI_UPDATE_APP_ID` and private key
+   read/write permissions and Administration read-only permission (needed to
+   inspect the required branch-protection gates). Store its ID as `SLIPPI_UPDATE_APP_ID` and private key
    as `SLIPPI_UPDATE_APP_PRIVATE_KEY` in Actions secrets. Alternatively, set
    `SLIPPI_UPDATE_TOKEN` to a repository-scoped PAT with those permissions.
    The updater deliberately has no `GITHUB_TOKEN` fallback because bot updates
