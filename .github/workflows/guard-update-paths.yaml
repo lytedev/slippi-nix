@@ -1,6 +1,8 @@
 name: guard update paths
 
 on:
+  push:
+    branches-ignore: [main, automated/update-sources]
   pull_request:
     branches: [main]
 
