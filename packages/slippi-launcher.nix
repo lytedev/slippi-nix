@@ -1,25 +1,12 @@
-let
-  # static package defaults
-  defaults = {
-    pname = "slippi-launcher";
-    inherit ((import ../hashes.nix).launcher) version hash;
-  };
-in
 {
   lib,
   appimageTools,
-  fetchurl,
   makeWrapper,
-  version ? defaults.version,
-  hash ? defaults.hash,
-  pname ? defaults.pname,
+  source,
 }:
 let
-  # dynamic package defaults
-  src = fetchurl {
-    inherit hash;
-    url = "https://github.com/project-slippi/slippi-launcher/releases/download/v${version}/Slippi-Launcher-${version}-x86_64.AppImage";
-  };
+  pname = "slippi-launcher";
+  inherit (source) version src;
   appImageContents = appimageTools.extract {
     inherit pname src version;
   };

@@ -1,25 +1,17 @@
-let
-  # static package defaults
-  defaults = {
-    pname = "Slippi_Netplay_Mainline-x86_64.AppImage";
-    inherit ((import ../hashes.nix).netplay-beta) version hash;
-  };
-in
 {
   lib,
   appimageTools,
-  fetchzip,
   makeWrapper,
-  version ? defaults.version,
-  hash ? defaults.hash,
-  pname ? defaults.pname,
+  runCommand,
+  unzip,
+  source,
 }:
 let
-  # dynamic package defaults
-  rawZip = fetchzip {
-    inherit hash;
-    url = "https://github.com/project-slippi/dolphin/releases/download/v${version}/Mainline-Slippi-${version}-Linux.zip";
-    stripRoot = false;
+  pname = "Slippi_Netplay_Mainline-x86_64.AppImage";
+  rawZip = import ./unpack-appimage-zip.nix {
+    inherit runCommand unzip;
+    name = "slippi-netplay-beta-${source.version}";
+    inherit (source) src;
   };
   src = "${rawZip}/Slippi_Netplay_Mainline-x86_64.AppImage";
 in
@@ -28,11 +20,11 @@ in
     lib
     appimageTools
     makeWrapper
-    version
     pname
     src
     rawZip
     ;
+  inherit (source) version;
   extraInstallCommands = ''
     wrapProgram "$out/bin/${pname}" \
       --inherit-argv0 \

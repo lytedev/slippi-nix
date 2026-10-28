@@ -1,0 +1,131 @@
+name: update sources
+
+on:
+  schedule:
+    - cron: "0 7 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: update-sources
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: update sources
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    env:
+      APP_ID: ${{ secrets.SLIPPI_UPDATE_APP_ID }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Require update credentials
+        env:
+          APP_ID: ${{ secrets.SLIPPI_UPDATE_APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.SLIPPI_UPDATE_APP_PRIVATE_KEY }}
+          UPDATE_TOKEN: ${{ secrets.SLIPPI_UPDATE_TOKEN }}
+        run: |
+          if [[ -n "$APP_ID" || -n "$APP_PRIVATE_KEY" ]]; then
+            [[ -n "$APP_ID" && -n "$APP_PRIVATE_KEY" ]] || {
+              echo '::error::Both update App ID and private key are required.'
+              exit 1
+            }
+          elif [[ -z "$UPDATE_TOKEN" ]]; then
+            echo '::error::Configure the update App or SLIPPI_UPDATE_TOKEN.'
+            echo 'GITHUB_TOKEN cannot trigger downstream CI.'
+            exit 1
+          fi
+
+      - name: Create update app token
+        id: app-token
+        if: ${{ env.APP_ID != '' }}
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349
+        with:
+          app-id: ${{ secrets.SLIPPI_UPDATE_APP_ID }}
+          private-key: ${{ secrets.SLIPPI_UPDATE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Verify required merge gates
+        env:
+          GH_TOKEN: >-
+            ${{ steps.app-token.outputs.token || secrets.SLIPPI_UPDATE_TOKEN }}
+        run: |
+          # shellcheck disable=SC2016
+          gh api graphql -F owner="${GITHUB_REPOSITORY%/*}" \
+            -F name="${GITHUB_REPOSITORY#*/}" \
+            -f query='query($owner: String!, $name: String!) {
+              repository(owner: $owner, name: $name) {
+                autoMergeAllowed
+                squashMergeAllowed
+                ref(qualifiedName: "refs/heads/main") {
+                  branchProtectionRule {
+                    requiresStatusChecks
+                    requiredStatusCheckContexts
+                    isAdminEnforced
+                  }
+                }
+              }
+            }' > "$RUNNER_TEMP/merge-gates.json"
+          jq -e '.data.repository |
+            .autoMergeAllowed and .squashMergeAllowed and
+            (.ref.branchProtectionRule |
+              .requiresStatusChecks and .isAdminEnforced and
+              (.requiredStatusCheckContexts |
+                index("nix flake check") != null and
+                index("sources-only") != null))' \
+            "$RUNNER_TEMP/merge-gates.json" || {
+              echo '::error::Required merge gates are missing; see readme.md.'
+              exit 1
+            }
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@129f07902485941992791c670de648dbe572a9ac
+
+      - name: Run nvfetcher
+        env:
+          GH_TOKEN: >-
+            ${{ steps.app-token.outputs.token || secrets.SLIPPI_UPDATE_TOKEN }}
+        run: |
+          keyfile="$(mktemp)"
+          trap 'rm -f "$keyfile"' EXIT
+          chmod 600 "$keyfile"
+          printf '[keys]\ngithub = "%s"\n' "$GH_TOKEN" > "$keyfile"
+          nixpkgs_revision="$(jq -r .nodes.nixpkgs.locked.rev flake.lock)"
+          nix run "github:NixOS/nixpkgs/$nixpkgs_revision#nvfetcher" -- \
+            --keyfile "$keyfile"
+          nix fmt -- _sources/generated.nix
+
+      - name: Create pull request
+        id: update-pr
+        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c
+        with:
+          token: >-
+            ${{ steps.app-token.outputs.token || secrets.SLIPPI_UPDATE_TOKEN }}
+          base: main
+          branch: automated/update-sources
+          delete-branch: true
+          add-paths: |
+            _sources/generated.nix
+            _sources/generated.json
+          commit-message: "chore(sources): update slippi releases"
+          title: "chore(sources): update slippi releases"
+          body: "See the source update commit and required checks."
+
+      - name: Enable squash auto-merge
+        if: steps.update-pr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: >-
+            ${{ steps.app-token.outputs.token || secrets.SLIPPI_UPDATE_TOKEN }}
+          PR_NUMBER: ${{ steps.update-pr.outputs.pull-request-number }}
+          PR_HEAD: ${{ steps.update-pr.outputs.pull-request-head-sha }}
+        run: |
+          gh pr merge "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" \
+            --auto --squash --match-head-commit "$PR_HEAD"

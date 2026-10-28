@@ -134,26 +134,74 @@ nix flake lock --update-input slippi-nix # use whatever name you gave this flake
 sudo nixos-rebuild switch --flake .
 ```
 
+The pinned upstream versions live in [`nvfetcher.toml`](./nvfetcher.toml) and the
+generated [`_sources/generated.nix`](./_sources/generated.nix). A scheduled
+GitHub Actions workflow ([`update-sources.yaml`](./.github/workflows/update-sources.yaml))
+runs [`nvfetcher`](https://github.com/berberman/nvfetcher) daily and opens a PR
+whenever an upstream release changes. With the maintainer setup below, these
+PRs squash-merge automatically after the required `nix flake check` and
+`sources-only` checks pass. The merge triggers the existing cache publication
+workflow. Broken upstream releases stay off `main` until fixed.
+
+`nix run --refresh github:lytedev/slippi-nix` runs the latest validated launcher
+on `main`, not necessarily the newest upstream release. Discovery runs daily;
+without `--refresh`, Nix may reuse a cached resolution of `main`. Flake consumers
+still need to update their lock files.
+
+## Maintainer setup
+
+1. Install a GitHub App on this repository with Contents and Pull requests
+   read/write permissions. Store its ID as `SLIPPI_UPDATE_APP_ID` and private key
+   as `SLIPPI_UPDATE_APP_PRIVATE_KEY` in Actions secrets. Alternatively, set
+   `SLIPPI_UPDATE_TOKEN` to a repository-scoped PAT with those permissions.
+   The updater deliberately has no `GITHUB_TOKEN` fallback because bot updates
+   must trigger PR checks and the post-merge cache workflow.
+2. Enable squash merging and auto-merge in repository settings.
+3. Configure **classic branch protection** for `main`, including administrators,
+   with required checks named exactly `nix flake check` and `sources-only`.
+   The updater verifies these settings before creating a PR; rulesets alone
+   are not supported by this verification. Give the updater no bypass rights
+   and do not require human reviews for its PRs. Run the new guard check on
+   this setup PR before selecting it as a required check.
+4. Ensure the `slippi-nix.cachix.org` environment has no approval requirement
+   and has a working `CACHIX_AUTH_TOKEN`. Enable Actions failure notifications
+   for the updater and cache workflows. Scheduled workflows must remain enabled
+   (GitHub can disable schedules on inactive public repositories).
+5. Once this workflow is on `main`, dispatch `update sources` and verify a real
+   update PR triggers both checks, merges, and starts `build and cache`.
+   Missing credentials or merge gates cause a visible failure, not an ungated
+   merge. A run with no new upstream versions creates no PR.
+
+## Manual updates
+
+To regenerate the pins by hand:
+
+```shell_session
+nix run nixpkgs#nvfetcher
+```
+
 In the event that this repo is out-of-date and an update was newly pushed out
 and you do not want to wait, or you prefer to be in control, the Home Manager
-module exposes extra configuration fields for specifying the version of the
-AppImage you want along with the hash like so:
+module lets you override any component with your own package. Point it at your
+own build (e.g. via `pkgs.callPackage ./packages/slippi-netplay.nix`) or override
+the pinned one's source:
 
 ```nix
 {
   home-manager.users.YOUR_USERNAME = {
-    slippi-launcher.netplayVersion = "3.4.0";
-    slippi-launcher.netplayHash = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
-    slippi-launcher.netplayBetaVersion = "4.0.0-mainline-beta.6";
-    slippi-launcher.netplayBetaHash = "sha256-CicAZ28+yiagG3bjosu02azV6XzP7+JnLhUJ3hdeQbI=";
-    slippi-launcher.playbackVersion = "3.4.0";
-    slippi-launcher.playbackHash = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
+    slippi-launcher.netplayPackage = pkgs.callPackage "${slippi-nix}/packages/slippi-netplay.nix" {
+      source = {
+        version = "3.4.0";
+        src = pkgs.fetchurl {
+          url = "https://github.com/project-slippi/Ishiiruka/releases/download/v3.4.0/FM-Slippi-3.4.0-Linux.zip";
+          hash = "sha256-d1iawMsMwFElUqFmwWAD9rNsDdQr2LKscU8xuJPvxYg=";
+        };
+      };
+    };
+    # netplayBetaPackage, playbackPackage, and launcherPackage work the same way.
   };
 }
 ```
-
-So when a Slippi update is released, you can usually bump the version to match
-and update the hash with whatever `nix` says it is.
 
 # Cache
 
