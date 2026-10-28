@@ -39,6 +39,76 @@ class ReleaseAutomationTests(unittest.TestCase):
                 },
                 capture_output=True,
                 text=True,
+                check=False,
+            )
+
+    def test_post_ci_merger_rejects_other_authors_and_unexpected_paths(self):
+        script = workflow_step(
+            "nix-flake-check.yaml",
+            "merge-source-update",
+            "Merge only the validated updater commit",
+        )
+        for author, paths_allowed, expected_success in [
+            ("test-updater[bot]", "true", True),
+            ("unexpected-author", "true", False),
+            ("test-updater[bot]", "false", False),
+        ]:
+            with self.subTest(author=author, paths_allowed=paths_allowed):
+                result = self.run_script(
+                    script,
+                    {
+                        "APP_SLUG": "test-updater",
+                        "PR_AUTHOR": author,
+                        "PR_NUMBER": "46",
+                        "PR_HEAD": "validated-head",
+                        "GITHUB_REPOSITORY": "test/repository",
+                        "TEST_PATHS_ALLOWED": paths_allowed,
+                    },
+                    "gh() {\n"
+                    '  if [[ "$1 $2" == "pr view" ]]; then\n'
+                    '    printf "%s\\n" "$TEST_PATHS_ALLOWED"\n'
+                    '  elif [[ "$*" == "pr merge 46 --repo test/repository '
+                    '--squash --match-head-commit validated-head" ]]; then\n'
+                    '    printf "Merged validated head\\n"\n'
+                    "  else\n"
+                    "    return 1\n"
+                    "  fi\n"
+                    "}\n",
+                )
+                self.assertEqual(
+                    result.returncode == 0,
+                    expected_success,
+                    "Only updater-authored pin changes may merge, and the "
+                    f"validated head must match without bypass; got {result}.",
+                )
+
+    def test_post_ci_merger_requires_successful_same_repository_update_ci(self):
+        merge_job = json.loads(
+            subprocess.check_output(
+                [
+                    "yq",
+                    "-o=json",
+                    '.jobs."merge-source-update"',
+                    str(REPOSITORY / ".github/workflows/nix-flake-check.yaml"),
+                ],
+                text=True,
+            )
+        )
+        self.assertEqual(
+            merge_job["needs"],
+            "build",
+            f"The merger must depend on successful Nix CI; got {merge_job}.",
+        )
+        for restriction in [
+            "github.event_name == 'pull_request'",
+            "github.head_ref == 'automated/update-sources'",
+            "github.event.pull_request.head.repo.full_name == github.repository",
+        ]:
+            self.assertIn(
+                restriction,
+                merge_job["if"],
+                f"The merger must restrict execution to {restriction}; "
+                f"got {merge_job['if']}.",
             )
 
     def test_app_token_can_inspect_protection_but_cannot_change_it(self):

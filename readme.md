@@ -140,8 +140,10 @@ GitHub Actions workflow ([`update-sources.yaml`](./.github/workflows/update-sour
 runs [`nvfetcher`](https://github.com/berberman/nvfetcher) daily and opens a PR
 whenever an upstream release changes. With the maintainer setup below, these
 PRs squash-merge automatically after the required `nix flake check` and
-`sources-only` checks pass. The merge triggers the existing cache publication
-workflow. Broken upstream releases stay off `main` until fixed.
+`sources-only` checks pass. The CI workflow also merges validated updater PRs
+using a fresh App token, so completion does not depend solely on GitHub's queued
+auto-merge. It verifies the updater identity, pin-only changes, and exact tested
+head without bypassing branch protection. The merge triggers cache publication. Broken upstream releases stay off `main` until fixed.
 
 `nix run --refresh github:lytedev/slippi-nix` runs the latest validated launcher
 on `main`, not necessarily the newest upstream release. Discovery runs daily;
@@ -152,8 +154,8 @@ still need to update their lock files.
 
 1. Install a GitHub App on this repository with Contents and Pull requests
    read/write permissions and Administration read-only permission (needed to
-   inspect the required branch-protection gates). Store its ID as `SLIPPI_UPDATE_APP_ID` and private key
-   as `SLIPPI_UPDATE_APP_PRIVATE_KEY` in Actions secrets. Alternatively, set
+   inspect the required branch-protection gates). Store its ID as
+   `SLIPPI_UPDATE_APP_ID` and private key as `SLIPPI_UPDATE_APP_PRIVATE_KEY` in Actions secrets. Alternatively, set
    `SLIPPI_UPDATE_TOKEN` to a repository-scoped PAT with those permissions.
    The updater deliberately has no `GITHUB_TOKEN` fallback because bot updates
    must trigger PR checks and the post-merge cache workflow.

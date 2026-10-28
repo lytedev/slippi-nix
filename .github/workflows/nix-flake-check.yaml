@@ -29,3 +29,52 @@ jobs:
             'actionlint && python3 -m unittest discover -s tests -v'
       - name: nix flake check
         run: nix flake check
+
+  merge-source-update:
+    name: merge validated source update
+    needs: build
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.head_ref == 'automated/update-sources' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    env:
+      APP_ID: ${{ secrets.SLIPPI_UPDATE_APP_ID }}
+    steps:
+      - name: Create merge app token
+        id: app-token
+        if: env.APP_ID != ''
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349
+        with:
+          app-id: ${{ secrets.SLIPPI_UPDATE_APP_ID }}
+          private-key: ${{ secrets.SLIPPI_UPDATE_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Merge only the validated updater commit
+        env:
+          GH_TOKEN: >-
+            ${{ steps.app-token.outputs.token || secrets.SLIPPI_UPDATE_TOKEN }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [[ -n "$APP_SLUG" ]]; then
+            expected_author="${APP_SLUG}[bot]"
+          else
+            expected_author="$(gh api user --jq .login)"
+          fi
+          [[ "$PR_AUTHOR" == "$expected_author" ]] || {
+            echo '::error::Only the configured updater may author this PR.'
+            exit 1
+          }
+          gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" \
+            --json files --jq '.files | all(
+              .path == "_sources/generated.nix" or
+              .path == "_sources/generated.json")' | grep -qx true
+          gh pr merge "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" \
+            --squash --match-head-commit "$PR_HEAD"
