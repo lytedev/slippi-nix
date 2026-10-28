@@ -41,6 +41,25 @@ class ReleaseAutomationTests(unittest.TestCase):
                 text=True,
             )
 
+    def test_app_token_can_inspect_protection_but_cannot_change_it(self):
+        permissions = json.loads(
+            subprocess.check_output(
+                [
+                    "yq",
+                    "-o=json",
+                    '.jobs.update.steps[] | select(.id == "app-token") | .with',
+                    str(REPOSITORY / ".github/workflows/update-sources.yaml"),
+                ],
+                text=True,
+            )
+        )
+        self.assertEqual(
+            permissions.get("permission-administration"),
+            "read",
+            "The update App must be able to inspect branch protection without "
+            f"being able to weaken it; its token request was {permissions}.",
+        )
+
     def test_credentials_require_a_complete_app_or_explicit_update_token(self):
         script = workflow_step(
             "update-sources.yaml", "update", "Require update credentials"
