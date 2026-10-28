@@ -19,14 +19,25 @@ to manage your Slippi installation in that case.
 The simplest usage is to run the launcher directly:
 
 ```shell
-nix run github:lytedev/slippi-nix
+nix run --refresh github:lytedev/slippi-nix
 ```
 
 To avoid potential graphics driver mismatches between the flake's pinned nixpkgs
 and your system, override the nixpkgs input to use your own:
 
 ```shell
-nix run github:lytedev/slippi-nix --override-input nixpkgs nixpkgs
+nix run --refresh github:lytedev/slippi-nix \
+  --override-input nixpkgs '<your-nixpkgs-reference>'
+```
+
+There isn't a universal way for Nix to find the nixpkgs your system was built
+with. If your `nixpkgs` registry entry points at that version, you can resolve
+it first and use that:
+
+```fish
+set host_nixpkgs (nix flake metadata --json nixpkgs | jq -er .url)
+nix run --refresh github:lytedev/slippi-nix \
+  --override-input nixpkgs "$host_nixpkgs"
 ```
 
 This uses the `slippi-launcher-desktop` package, which is a standalone wrapper
@@ -35,7 +46,13 @@ each launch. No Home Manager module is required — you can configure your ISO
 path and other settings through the launcher UI. Login and other
 launcher-managed settings are preserved across rebuilds.
 
-To add it permanently to your system:
+The `--refresh` flag makes Nix refresh its cached flake resolution, so you get
+the latest version available on this repo's `main`. It doesn't check upstream
+Slippi releases itself. You can omit it if you're happy to use Nix's cache
+(generally if you know that Slippi hasn't updated and/or this repo hasn't
+updated its references).
+
+To add it permanently to your system, make Slippi follow your own nixpkgs input:
 
 ```nix
 {
