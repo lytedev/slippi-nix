@@ -1,17 +1,31 @@
 on:
-  push: {"branches":["**","!main"]}
-  pull_request: {"branches":["main"]}
+  push:
+    branches-ignore: [main, automated/update-sources]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+
 jobs:
   build:
     name: nix flake check
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v4
-    - name: Install Nix
-      uses: DeterminateSystems/nix-installer-action@v3
-    - uses: cachix/cachix-action@v14
-      with:
-        name: slippi-nix
-        skipPush: 'true' # read only to speed up checks
-    - name: nix flake check
-      run: nix flake check
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@129f07902485941992791c670de648dbe572a9ac
+      - uses: cachix/cachix-action@18cf96c7c98e048e10a83abd92116114cd8504be
+        with:
+          name: slippi-nix
+          skipPush: "true" # read only to speed up checks
+      - name: Test release automation
+        run: |
+          revision="$(jq -r .nodes.nixpkgs.locked.rev flake.lock)"
+          packages="github:NixOS/nixpkgs/$revision"
+          nix shell "$packages#python3" "$packages#yq-go" \
+            "$packages#actionlint" "$packages#shellcheck" -c bash -c \
+            'actionlint && python3 -m unittest discover -s tests -v'
+      - name: nix flake check
+        run: nix flake check

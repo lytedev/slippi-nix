@@ -1,0 +1,40 @@
+name: guard update paths
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  sources-only:
+    name: sources-only
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Restrict automated updates to source pins
+        env:
+          UPDATE_BRANCH: automated/update-sources
+          HEAD_BRANCH: ${{ github.head_ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [[ "$HEAD_BRANCH" != "$UPDATE_BRANCH" ]]; then
+            exit 0
+          fi
+          git diff --name-only --no-renames -z "$BASE_SHA...$HEAD_SHA" \
+            > "$RUNNER_TEMP/updated-paths"
+          while IFS= read -r -d '' path; do
+            case "$path" in
+              _sources/generated.nix|_sources/generated.json) ;;
+              *)
+                printf 'Unexpected source update path: %q\n' "$path"
+                exit 1
+                ;;
+            esac
+          done < "$RUNNER_TEMP/updated-paths"
