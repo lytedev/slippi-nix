@@ -23,11 +23,11 @@
         "pinned": false,
         "src": {
             "name": null,
-            "sha256": "sha256-yraqKM7lltWuvN1MSCcKceUytvHoSkPr1/qL9S4rH8M=",
+            "sha256": "sha256-BdA4cuVBsMQAQK/Y6nWvtoUkQ0APMzbjHsHvMjKJLi4=",
             "type": "url",
-            "url": "https://github.com/project-slippi/Ishiiruka/releases/download/v3.6.4/FM-Slippi-3.6.4-Linux.zip"
+            "url": "https://github.com/project-slippi/Ishiiruka/releases/download/v3.7.0/FM-Slippi-3.7.0-Linux.zip"
         },
-        "version": "3.6.4"
+        "version": "3.7.0"
     },
     "netplay-beta": {
         "cargoLocks": null,
@@ -38,11 +38,11 @@
         "pinned": false,
         "src": {
             "name": null,
-            "sha256": "sha256-uBPjIjaeLMk68f9uaRytjB60AXcY823ZYm+CfhGwNgk=",
+            "sha256": "sha256-PDB6TydtyUVCRR2oxeNbyx7n/GAJwi1WucCfyr/DwkM=",
             "type": "url",
-            "url": "https://github.com/project-slippi/dolphin/releases/download/v4.0.0-mainline-beta.19/Mainline-Slippi-4.0.0-mainline-beta.19-Linux.zip"
+            "url": "https://github.com/project-slippi/dolphin/releases/download/v4.0.0-mainline-beta.20/Mainline-Slippi-4.0.0-mainline-beta.20-Linux.zip"
         },
-        "version": "4.0.0-mainline-beta.19"
+        "version": "4.0.0-mainline-beta.20"
     },
     "playback": {
         "cargoLocks": null,
@@ -53,10 +53,10 @@
         "pinned": false,
         "src": {
             "name": null,
-            "sha256": "sha256-x/y6C2EU7qtaogNn2Jpmna7r1jndxDqplpiDsYxJzxw=",
+            "sha256": "sha256-XnN4seYDEPKutITEkBC4573WJ9cNBZjzkuiAd/eYOrM=",
             "type": "url",
-            "url": "https://github.com/project-slippi/Ishiiruka-Playback/releases/download/v3.5.2/playback-3.5.2-Linux.zip"
+            "url": "https://github.com/project-slippi/Ishiiruka-Playback/releases/download/v3.7.0/playback-3.7.0-Linux.zip"
         },
-        "version": "3.5.2"
+        "version": "3.7.0"
     }
 }
