@@ -16,26 +16,26 @@
   };
   netplay = {
     pname = "netplay";
-    version = "3.6.4";
+    version = "3.7.0";
     src = fetchurl {
-      url = "https://github.com/project-slippi/Ishiiruka/releases/download/v3.6.4/FM-Slippi-3.6.4-Linux.zip";
-      sha256 = "sha256-yraqKM7lltWuvN1MSCcKceUytvHoSkPr1/qL9S4rH8M=";
+      url = "https://github.com/project-slippi/Ishiiruka/releases/download/v3.7.0/FM-Slippi-3.7.0-Linux.zip";
+      sha256 = "sha256-BdA4cuVBsMQAQK/Y6nWvtoUkQ0APMzbjHsHvMjKJLi4=";
     };
   };
   netplay-beta = {
     pname = "netplay-beta";
-    version = "4.0.0-mainline-beta.19";
+    version = "4.0.0-mainline-beta.20";
     src = fetchurl {
-      url = "https://github.com/project-slippi/dolphin/releases/download/v4.0.0-mainline-beta.19/Mainline-Slippi-4.0.0-mainline-beta.19-Linux.zip";
-      sha256 = "sha256-uBPjIjaeLMk68f9uaRytjB60AXcY823ZYm+CfhGwNgk=";
+      url = "https://github.com/project-slippi/dolphin/releases/download/v4.0.0-mainline-beta.20/Mainline-Slippi-4.0.0-mainline-beta.20-Linux.zip";
+      sha256 = "sha256-PDB6TydtyUVCRR2oxeNbyx7n/GAJwi1WucCfyr/DwkM=";
     };
   };
   playback = {
     pname = "playback";
-    version = "3.5.2";
+    version = "3.7.0";
     src = fetchurl {
-      url = "https://github.com/project-slippi/Ishiiruka-Playback/releases/download/v3.5.2/playback-3.5.2-Linux.zip";
-      sha256 = "sha256-x/y6C2EU7qtaogNn2Jpmna7r1jndxDqplpiDsYxJzxw=";
+      url = "https://github.com/project-slippi/Ishiiruka-Playback/releases/download/v3.7.0/playback-3.7.0-Linux.zip";
+      sha256 = "sha256-XnN4seYDEPKutITEkBC4573WJ9cNBZjzkuiAd/eYOrM=";
     };
   };
 }
