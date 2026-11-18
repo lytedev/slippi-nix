@@ -38,11 +38,11 @@
         "pinned": false,
         "src": {
             "name": null,
-            "sha256": "sha256-PDB6TydtyUVCRR2oxeNbyx7n/GAJwi1WucCfyr/DwkM=",
+            "sha256": "sha256-TeuqhzutB8lMq70PXkkvqOjA8LMeO+ewp9enSXLRFWM=",
             "type": "url",
-            "url": "https://github.com/project-slippi/dolphin/releases/download/v4.0.0-mainline-beta.20/Mainline-Slippi-4.0.0-mainline-beta.20-Linux.zip"
+            "url": "https://github.com/project-slippi/dolphin/releases/download/v4.0.0-mainline-beta.21/Mainline-Slippi-4.0.0-mainline-beta.21-Linux.zip"
         },
-        "version": "4.0.0-mainline-beta.20"
+        "version": "4.0.0-mainline-beta.21"
     },
     "playback": {
         "cargoLocks": null,

@@ -24,10 +24,10 @@
   };
   netplay-beta = {
     pname = "netplay-beta";
-    version = "4.0.0-mainline-beta.20";
+    version = "4.0.0-mainline-beta.21";
     src = fetchurl {
-      url = "https://github.com/project-slippi/dolphin/releases/download/v4.0.0-mainline-beta.20/Mainline-Slippi-4.0.0-mainline-beta.20-Linux.zip";
-      sha256 = "sha256-PDB6TydtyUVCRR2oxeNbyx7n/GAJwi1WucCfyr/DwkM=";
+      url = "https://github.com/project-slippi/dolphin/releases/download/v4.0.0-mainline-beta.21/Mainline-Slippi-4.0.0-mainline-beta.21-Linux.zip";
+      sha256 = "sha256-TeuqhzutB8lMq70PXkkvqOjA8LMeO+ewp9enSXLRFWM=";
     };
   };
   playback = {
